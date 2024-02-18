@@ -138,7 +138,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
         }}>
             <Tab1 icon={PersonOutline} title="Customers" value={hele?hele.getTotalSchools():'...'} color={mye.mycol.green} />
             <Tab1  title="Commissions" value={hele?hele.getTotalCommissionsAmt():'...'} color={mye.mycol.green} />
-            <Tab1  title="Partner Link" value={`https://portal.schoolsilo.cloud/register/${mainprop.pbi.getPartnerID()}`} isLink color={mye.mycol.green} />
+            <Tab1  title="Partner Link" value={`https://portal.schoolsilo.cloud/schoolRegister/${mainprop.pbi.getPartnerID()}`} isLink color={mye.mycol.green} />
             <Tab1  title="Partner Code" value={mainprop.pbi.getPartnerID()} color={mye.mycol.green} />
         </div>
         <Mgin top={20} />

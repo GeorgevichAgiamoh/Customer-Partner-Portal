@@ -58,7 +58,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
         setError(false)
         setRdy(false)
         if(getUserId().length==0){
-            navigate('/login')
+            navigate('/partnerLogin')
             return;
         }
         makeRequest.get(`getPartnerBasicInfo/${getUserId()}`,{},(task)=>{
@@ -90,7 +90,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                                 setRdy(true)
                             }else{
                                 if(task.isLoggedOut()){
-                                    navigate('/login')
+                                    navigate('/partnerLogin')
                                     return
                                 }
                                 setError(true)
@@ -98,7 +98,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                         })
                     }else{
                         if(task.isLoggedOut()){
-                            navigate('/login')
+                            navigate('/partnerLogin')
                             return
                         }
                         setError(true)
@@ -106,7 +106,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                 })
             }else{
                 if(task.isLoggedOut()){
-                    navigate('/login')
+                    navigate('/partnerLogin')
                     return
                 }
                 setError(true)
@@ -296,8 +296,8 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                     setSex(e.target.value)
                 }}>
                     <option value="">Click to Choose</option>
-                    {Object.entries(spin_genders).map(([key,value])=>{
-                        return <option value={key}>{value}</option>
+                    {Object.entries(spin_genders).map(([key,value],i)=>{
+                        return <option key={myKey+i+21.32} value={key}>{value}</option>
                     })}
                 </select>
             </div>
@@ -435,7 +435,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                                         mainprop.goto(0)
                                     }else{
                                         if(task.isLoggedOut()){
-                                            navigate('/login')
+                                            navigate('/partnerLogin')
                                             return
                                         }
                                         toast(task.getErrorMsg(),0)
@@ -447,7 +447,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                             }else{
                                 setLoad(false)
                                 if(task.isLoggedOut()){
-                                    navigate('/login')
+                                    navigate('/partnerLogin')
                                     return
                                 }
                                 toast(task.getErrorMsg(),0)
@@ -456,7 +456,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                     }else{
                         setLoad(false)
                         if(task.isLoggedOut()){
-                            navigate('/login')
+                            navigate('/partnerLogin')
                             return
                         }
                         toast(task.getErrorMsg(),0)

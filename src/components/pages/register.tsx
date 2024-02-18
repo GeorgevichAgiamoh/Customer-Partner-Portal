@@ -113,9 +113,9 @@ export function RegisterPartner(){
                     flex:1,
                     marginLeft:20
                 }}>
-                    <mye.Tv text="Middle Name" />
+                    <mye.Tv text="*Middle Name" />
                     <Mgin top={5} />
-                    <EditTextFilled hint="Middle Name" value={mname} noSpace min={0} recv={(v)=>{
+                    <EditTextFilled hint="Middle Name" value={mname} noSpace min={3} recv={(v)=>{
                         setMName(v.trim())
                     }} />
                 </div>
@@ -146,7 +146,7 @@ export function RegisterPartner(){
             }}>
                 <mye.Tv text="*Phone Number" />
                 <Mgin top={5} />
-                <EditTextFilled hint="08012345678" value={phn} digi noSpace min={5} max={20} recv={(v)=>{
+                <EditTextFilled hint="08012345678" value={phn} digi noSpace min={11} max={11} recv={(v)=>{
                     setPhn(v.trim())
                 }} />
             </div>
@@ -183,6 +183,10 @@ export function RegisterPartner(){
             <Btn txt="CREATE ACCOUNT" onClick={()=>{
                 if(fname.length < 3){
                     toast('Invalid First Name Input',0)
+                    return;
+                }
+                if(mname.length < 3){
+                    toast('Invalid Middle Name Input',0)
                     return;
                 }
                 if(lname.length < 3){
@@ -495,7 +499,7 @@ export function PaySchoolRegFee(){
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/login?rdr=${location.pathname.substring(1)}`)
+            navigate(`/schoolLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }

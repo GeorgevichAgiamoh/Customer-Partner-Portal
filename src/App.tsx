@@ -3,7 +3,7 @@ import './App.css';
 import {BrowserRouter as Router, Routes, Route, useLocation, } from 'react-router-dom'
 import { createTheme, ThemeProvider } from "@mui/material";
 import { lazy, useEffect, useState } from 'react';
-import {  ForgotPassword, MailLogin, PasswordResetRequest, ResetPassword, Verif, } from './components/pages/login';
+import {  ForgotPassword, MailLogin, ResetPassword, Verif, } from './components/pages/login';
 import { PaySchoolRegFee, RegisterPartner, RegisterSchool } from './components/pages/register';
 import { Partners } from './components/pages/partners/partners';
 
@@ -49,12 +49,11 @@ export default function App() {
             <Route path='/partnerRegister'  element={<RegisterPartner />}></Route>
             <Route path='/schoolLogin'  element={<MailLogin acctType={0} />}></Route>
             <Route path='/partnerLogin'  element={<MailLogin acctType={1} />}></Route>
-            <Route path='/payregfee'  element={<PaySchoolRegFee />}></Route>
             <Route path='/adminlogin'  element={<MailLogin acctType={2} />}></Route>
-            <Route path='/forgotpassword'  element={<ForgotPassword />}></Route>
+            <Route path='/payregfee'  element={<PaySchoolRegFee />}></Route>
+            <Route path='/forgotpassword/:who'  element={<ForgotPassword />}></Route>
             <Route path='/verif'  element={<Verif />}></Route>
-            <Route path='/passwordreset/:token'  element={<ResetPassword />}></Route>
-            <Route path='/passwordreset'  element={<PasswordResetRequest />}></Route>
+            <Route path='/passwordreset/:who/:token'  element={<ResetPassword />}></Route>
             {/* <Route path='/admindash'  element={<Admin />}></Route>
             <Route path='/memberdash'  element={<Members />}></Route> */}
             <Route path='/partnerdash'  element={<Partners />}></Route>

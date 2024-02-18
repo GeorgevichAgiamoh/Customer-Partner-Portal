@@ -12,12 +12,45 @@ import { schoolBasicinfo } from "../classes/models";
 
 
 
+export function getWhoTitle(who:string){
+    if(who == '0'){
+        return 'School'
+    }
+    if(who == '1'){
+        return 'Partner'
+    }
+    return 'Admin'
+}
+
+
+export function getWhoLogin(who:string){
+    if(who == '0'){
+        return 'schoolLogin'
+    }
+    if(who == '1'){
+        return 'partnerLogin'
+    }
+    return 'adminLogin'
+}
+
+
+export function getWhoRegister(who:string){
+    if(who == '0'){
+        return 'schoolRegister'
+    }
+    if(who == '1'){
+        return 'partnerRegister'
+    }
+    return 'Admin'
+}
+
 
 export function ForgotPassword(){
     const navigate = useNavigate()
     const mye = new myEles(false);
     const dimen = useWindowDimensions();
     const[eml,setEml] = useState('')
+    const who = useParams().who ?? '0'
     const[sent,setSent] = useState(false)
 
     useEffect(()=>{
@@ -96,7 +129,7 @@ export function ForgotPassword(){
             padding:dimen.dsk?0:20,
             boxSizing:'border-box'
         }}>
-            <mye.BTv text="Forgot Password" size={40} color={mye.mycol.primarycol} />
+            <mye.BTv text={`Forgot ${getWhoTitle(who)} Password`} size={40} color={mye.mycol.primarycol} />
             <Mgin top={20} />
             <mye.Tv text="Please enter your registered email and we will send a password reset link" center />
             <Mgin top={20} />
@@ -117,7 +150,8 @@ export function ForgotPassword(){
                 }
                 setLoad(true)
                 makeRequest.post('sendPasswordResetEmail',{
-                    email:eml
+                    email:eml,
+                    type: who
                 },(task)=>{
                     setLoad(false)
                     if(task.isSuccessful()){
@@ -130,7 +164,7 @@ export function ForgotPassword(){
             <Mgin top={20} />
             <LrText left={<mye.Tv text="Don't have an account?" color={mye.mycol.primarycol} />} 
             right={<mye.Tv text="Create an account" color={mye.mycol.primarycol} onClick={()=>{
-                navigate(`/register`)
+                navigate(`/${getWhoRegister(who)}`)
             }} />}/>
         </div>}
 
@@ -194,6 +228,7 @@ export function ResetPassword(){
     const[pwd1,setPwd1] = useState('')
     const[pwd2,setPwd2] = useState('')
     const token = useParams().token;
+    const who = useParams().who ?? '0'
     const[changed,setChanged] = useState(false)
 
     useEffect(()=>{
@@ -264,19 +299,19 @@ export function ResetPassword(){
                 fontSize:30
             }} />
             <Mgin top={10} />
-            <mye.BTv text="Password Changed" size={18} />
+            <mye.BTv text={`${getWhoTitle(who)} Password Changed`} size={18} />
             <Mgin top={10} />
             <mye.Tv text="Please proceed to login" />
             <Mgin top={10} />
             <Btn txt="LOGIN" width={100} onClick={()=>{
-                navigate(`/login`)
+                navigate(`/${getWhoLogin(who)}`)
             }} />
         </div>:<div className="vlc" style={{
             width:dimen.dsk?500:'100%',
             padding:dimen.dsk?0:20,
             boxSizing:'border-box'
         }}>
-            <mye.BTv text="Reset Password" size={40} color={mye.mycol.primarycol} />
+            <mye.BTv text={`Reset ${getWhoTitle(who)} Password`} size={40} color={mye.mycol.primarycol} />
             <Mgin top={20} />
             <div style={{
                 display: pwd1.length>6?'none':undefined,
@@ -330,7 +365,7 @@ export function ResetPassword(){
             <Mgin top={20} />
             <LrText left={<mye.Tv text="Don't have an account?" color={mye.mycol.primarycol} />} 
             right={<mye.Tv text="Create an account" color={mye.mycol.primarycol} onClick={()=>{
-                navigate(`/register`)
+                navigate(`/${getWhoRegister(who)}`)
             }} />}/>
         </div>}
 
@@ -450,7 +485,7 @@ export function MailLogin(mainprop:{acctType:number}){
             <mye.Tv text="Don't have an account ?"  />
             <Mgin top={10} />
             <Btn txt="CREATE ACCOUNT" onClick={()=>{
-                navigate(`/register?eml=${eml}`)
+                navigate(`/${getWhoRegister(mainprop.acctType.toString())}?eml=${eml}`)
             }} bkg={mye.mycol.btnstrip} tcol={mye.mycol.primarycol} />
             <Mgin top={50} />
             <div className="ctr" style={{
@@ -519,46 +554,6 @@ export function MailLogin(mainprop:{acctType:number}){
 
 }
 
-
-
-export function PasswordResetRequest(){
-    const mye = new myEles(false);
-    const dimen = useWindowDimensions();
-    const[eml,setEml] = useState('')
-
-    useEffect(()=>{
-        setTitle(`Password Reset - ${appName}`)
-    },[])
-
-    return <div className="ctr" style={{
-        width:dimen.width,
-        height:dimen.height
-    }}>
-        <div className="vlc" style={{
-            width:dimen.dsk?500:'100%',
-            padding:dimen.dsk?0:20,
-            boxSizing:'border-box'
-        }}>
-            <mye.HTv text="Password Reset" size={30} />
-            <Mgin top={20} />
-            <div style={{
-                width:'100%'
-            }}>
-                <mye.Tv text="Email" />
-                <Mgin top={5} />
-                <EditTextFilled hint="Enter Email" value={eml} eml noSpace min={3} recv={(v)=>{
-                    setEml(v)
-                }} />
-            </div>
-            <Mgin top={20} />
-            <Btn txt="RESET PASSWORD" onClick={()=>{
-                //TODO implement
-            }} />
-        </div>
-
-    </div>
-
-}
 
 
 

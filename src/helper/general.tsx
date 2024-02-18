@@ -276,8 +276,7 @@ export function isPhoneNigOk(phn:string){
     if(phn.startsWith('234')){
         phn = '0'+phn.substring(3)
     }
-    //return phn.length == 11 && /^[0-9]+$/.test(phn) && (phn.startsWith('070') || phn.startsWith('071') || phn.startsWith('080') || phn.startsWith('081') || phn.startsWith('090') || phn.startsWith('091') )
-    return isDigit(phn)
+    return phn.length == 11 && /^[0-9]+$/.test(phn) && (phn.startsWith('070') || phn.startsWith('071') || phn.startsWith('080') || phn.startsWith('081') || phn.startsWith('090') || phn.startsWith('091') )
 }
 
 export function isEmlValid(eml:string){

@@ -44,7 +44,7 @@ export function Partners(){
             //OK
             getPartnerInfo()
           }else{
-            navigate('/login?rdr=')
+            navigate('/partnerLogin?rdr=')
           }
         })
     },[])
@@ -166,7 +166,7 @@ export function Partners(){
                     setForceProfileEdit(false)
                     if(pos==5){
                         makeRequest.get('logout',{},(task)=>{
-                            navigate('/login')
+                            navigate('/partnerLogin')
                         })
                     }
                 }} showy={()=>{
@@ -226,7 +226,7 @@ export function Partners(){
                                                     },2000)
                                                 }else{
                                                     if(task.isLoggedOut()){
-                                                        navigate('/login')
+                                                        navigate('/partnerLogin')
                                                         return
                                                     }
                                                     toast(task.getErrorMsg(),0)
@@ -265,7 +265,7 @@ export function Partners(){
                     overflowY:'scroll',
                     backgroundColor:'rgba(0,0,0,0.02)'
                 }}>
-                    {(pbi && pbi.isDeleted())?<ShowProfileDeleted />:(pbi && !pbi!.isVerified() && tabPos!=3)?<AskToVerif />:pbi?tabPos===0?<PartnerDashboard 
+                    {(pbi && pbi.isDeleted())?<ShowProfileDeleted />:(pbi && !pbi!.isVerified() && tabPos!=4)?<AskToVerif />:pbi?tabPos===0?<PartnerDashboard 
                      pbi={pbi!} pgi={pgi}/>:tabPos==1?<PartnerCustomers pbi={pbi} />:tabPos==2?<PartnerPayments />:tabPos==3?<MsgTBD />:tabPos==4?<PartnerProfile goto={(a)=>{
                         if(a==0){
                             getPartnerInfo()
@@ -290,7 +290,7 @@ export function Partners(){
                 setTabPos(pos)
                 if(pos==5){
                     makeRequest.get('logout',{},(task)=>{
-                        navigate('/login')
+                        navigate('/partnerLogin')
                     })
                 }
             }} showy={()=>{
