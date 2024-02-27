@@ -62,9 +62,13 @@ export class schoolBasicinfo{
 
 
 export class partnerBasicinfo{
+    generalData:partnerGeneralinfo
+    finData:partnerFinancialinfo
     data:any
     constructor(data:any){
         this.data = data
+        this.generalData = new partnerGeneralinfo(null)
+        this.finData = new partnerFinancialinfo(null)
     }
     getPartnerID(){
         return this.data['user_id']
@@ -89,6 +93,22 @@ export class partnerBasicinfo{
     }
     isDeleted(){
         return this.data['verif']=='2'
+    }
+
+    //--CUSTOM
+
+    setGeneralData(generalData:partnerGeneralinfo){
+        this.generalData = generalData;
+    }
+    setFinData(finData:partnerFinancialinfo){
+        this.finData = finData
+    }
+
+    isPrepared(){
+        return this.generalData?.data!=null && this.finData?.data!=null
+    }
+    getRegDate(){
+        return getCreatedTime(this.data)
     }
 }
 
@@ -321,22 +341,46 @@ export class partnerComEle{
     }
 }
 
-//--------------------------------------------------------------------------------------------------------
 export class verifStat{
     data:any
     constructor(data:any){
         this.data = data
     }
-    getTotalVerified(){
-        return this.data['totalVerified']
+    getSchoolVerif(){
+        return this.data['schoolsVerif']
     }
-    getTotalUnverified(){
-        return this.data['totalUnverified']
+    getSchoolsNotVerif(){
+        return this.data['schoolsNotVerif']
     }
-    getTotalDeleted(){
-        return this.data['totalDeleted']
+    getSchoolsDeleted(){
+        return this.data['schoolsDeleted']
+    }
+    getPartnersVerif(){
+        return this.data['partnersVerif']
+    }
+    getPartnersNotVerif(){
+        return this.data['partnersNotVerif']
+    }
+    getPartnersDeleted(){
+        return this.data['partnersDeleted']
+    }
+    
+}
+
+export class payStat{
+    data:any
+    constructor(data:any){
+        this.data = data
+    }
+    getSchoolsPaid(){
+        return this.data['schoolsPaid']
+    }
+    getSchoolsNotPaid(){
+        return this.data['schoolsNotPaid']
     }
 }
+
+//--------------------------------------------------------------------------------------------------------
 
 export function getCreatedTime(data:any,includeTime?:boolean){
     const ct = data['created_at'] as string
@@ -409,7 +453,7 @@ export class payRecordEle{
 }
 
 
-export class adsiInfoEle{
+export class schoolsiloInfoEle{
     data:any
     constructor(data:any){
         this.data = data
@@ -469,8 +513,8 @@ export class adminUserEle{
     constructor(data:any){
         this.data = data
     }
-    getMemId(){
-        return this.data['memid'].toString()
+    getUserId(){
+        return this.data['user_id'].toString()
     }
     getLastName(){
         return this.data['lname']
@@ -525,17 +569,4 @@ export class fileEle{
     }
 }
 
-
-export class payStat{
-    data:any
-    constructor(data:any){
-        this.data = data
-    }
-    getTotal(){
-        return this.data['total']
-    }
-    getCount(){
-        return this.data['count']
-    }
-}
 

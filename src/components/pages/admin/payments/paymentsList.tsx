@@ -7,13 +7,13 @@ import { CircularProgress } from "@mui/material"
 import Toast from "../../../toast/toast"
 import { getUserId, makeRequest, resHandler } from "../../../../helper/requesthandler"
 import { useLocation, useNavigate } from "react-router-dom"
-import { adminUserEle, defVal, partnerHighlights, schoolBasicinfo, schoolGeneralinfo, schoolPropInfo } from "../../../classes/models"
+import { adminUserEle, defVal, partnerHighlights, payStat, schoolBasicinfo, schoolGeneralinfo, schoolPropInfo } from "../../../classes/models"
 import { format } from "date-fns"
 import { PoweredBySSS } from "../../../../helper/schoolsilo"
 
 
 
-export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:schoolBasicinfo)=>void}){
+export function AdminPaymenysList(mainprop:{actiony:(action:number,user?:schoolBasicinfo)=>void}){
     const location = useLocation()
     const navigate = useNavigate()
     const dimen = useWindowDimensions()
@@ -21,10 +21,11 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
     const[search, setSearch] = useState('')
     const myKey = Date.now()
     const[isSearching, setIsSearching] = useState(false)
+    const[showPaid, setShowPaid] = useState(false)
     const[optToShow,setOptToShow] = useState(-1)
     const[showingIndex,setShowingIndex] = useState(0)
     const[infos,setInfos] = useState<schoolBasicinfo[]>([])
-    const[stat, setStat] = useState<partnerHighlights>()
+    const[stat, setStat] = useState<payStat>()
     
     
 
@@ -39,18 +40,18 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
     }
 
     useEffect(()=>{
-        setTitle(`Directory List - ${appName}`)
+        setTitle(`School Payments List - ${appName}`)
         getStats()
     },[])
 
     function getStats(dontgetschools?:boolean){
         setError(false)
         setLoad(true)
-        makeRequest.get(`getPartnerHighlights/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`getPaymentStats`,{},(task)=>{
             if(task.isSuccessful()){
-                setStat(new partnerHighlights(task.getData()))
+                setStat(new payStat(task.getData()))
                 if(!dontgetschools){
-                    getSchools(0)
+                    getSchools(0, showPaid)
                 }
             }else{
                 handleError(task)
@@ -58,12 +59,13 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
         })
     }
 
-    function getSchools(index:number){
+    function getSchools(index:number, paid:boolean){
+        setShowPaid(paid)
         setIsSearching(false)
         setOptToShow(-1)
         setError(false)
         setLoad(true)
-        makeRequest.get(`getSchoolsByPartner/${getUserId()}`,{
+        makeRequest.get(`getSchoolsByPay/${paid?'1':'0'}`,{
             start:(index*20),
             count:20
         },(task)=>{
@@ -223,13 +225,29 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
                 flex:1
             }}>
                 <Btn txt="Close Search" round onClick={()=>{
-                    getSchools(0)
+                    getSchools(0,showPaid)
                 }}  width={120}/>
             </div>
         </div>:<div style={{
-            width:360,
+            width:280,
             display:'flex'
-        }}></div>}
+        }}>
+            <div style={{
+                flex:1
+            }}>
+                <Btn txt="Not Paid" round onClick={()=>{
+                    getSchools(0, true)
+                }} transparent={!showPaid} />
+            </div>
+            <Mgin right={10} />
+            <div style={{
+                flex:1
+            }}>
+                <Btn txt="Paid" round onClick={()=>{
+                    getSchools(0, false)
+                }} transparent={showPaid}/>
+            </div>
+        </div>}
         right={<div className="flexi">
             <IconBtn icon={CloudDownloadOutlined} mye={mye} text="Download" ocl={()=>{
 
@@ -297,19 +315,19 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
                 <ArrowBack id="clk" className="icon" onClick={()=>{
                     if(showingIndex >0){
                         const index = showingIndex-1
-                        getSchools(index)
+                        getSchools(index,showPaid)
                     }
                 }} />
                 <Mgin right={10} />
                 {
-                    Array.from({length:Math.floor((stat?stat.getTotalSchools():0)/20)+1},(_,index)=>{
+                    Array.from({length:Math.floor((stat?showPaid?stat.getSchoolsPaid():stat.getSchoolsNotPaid():0)/20)+1},(_,index)=>{
                         return <div id="clk" key={myKey+index+10000} className="ctr" style={{
                             width:25,
                             height:25,
                             backgroundColor:showingIndex==index?mye.mycol.black:'transparent',
                             borderRadius:'50%'
                         }} onClick={()=>{
-                            getSchools(index)
+                            getSchools(index,showPaid)
                         }}>
                             <mye.BTv text={(index+1).toString()} color={showingIndex==index?mye.mycol.white:mye.mycol.black} size={16}/>
                         </div>
@@ -317,10 +335,10 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
                 }
                 <Mgin right={10} />
                 <ArrowForward id="clk" className="icon" onClick={()=>{
-                    const len = Math.floor((stat?stat.getTotalSchools():0)/20)
+                    const len = Math.floor((stat?showPaid?stat.getSchoolsPaid():stat.getSchoolsNotPaid():0)/20)
                     if(showingIndex < len){
                         const index = showingIndex+1
-                        getSchools(index)
+                        getSchools(index,showPaid)
                     }
                 }} />
             </div>

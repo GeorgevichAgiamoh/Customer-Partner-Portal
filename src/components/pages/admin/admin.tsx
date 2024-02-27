@@ -1,16 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import useWindowDimensions from "../../../helper/dimension";
-import { Btn, ErrorCont, LoadLay, LrText, Mgin, myEles } from "../../../helper/general";
+import { Btn, ErrorCont, LoadLay, LrText, Mgin, masterID, myEles } from "../../../helper/general";
 import { Add, ArrowDropDown, DeveloperModeOutlined, LockOutlined, Menu, NotificationsActiveOutlined, PersonOutline } from "@mui/icons-material";
-import { endpoint, getUserId, makeRequest } from "../../../helper/requesthandler";
-import { useNavigate } from "react-router-dom";
+import { endpoint, getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
 import { AdminNav } from "../nav";
 import { AdminDashboard } from "./dashbrd";
+import { adminUserEle } from "../../classes/models";
+import { AdminDirectory } from "./directory/directory";
+import { AdminPayments } from "./payments/payments";
+import { AdminSettings } from "./settings/settings";
 
 
 export function Admin(){
+    const location = useLocation()
     const[myKey, setMyKey] = useState(Date.now())
     const mye = new myEles(false);
     const navigate = useNavigate()
@@ -20,6 +25,7 @@ export function Admin(){
     const[tabPos, setTabPos] = useState(0)
     const[ppic,setPpic] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const[me, setMe] = useState<adminUserEle>()
     
     const tabs = [
         'Dashboard',
@@ -41,7 +47,31 @@ export function Admin(){
         })
     },[])
 
+    function handleError(task:resHandler){
+        setLoad(false)
+        setError(true)
+        if(task.isLoggedOut()){
+            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+        }else{
+            toast(task.getErrorMsg(),0)
+        }
+    }
+
+
     function getAdminInfo(){
+        setError(false)
+        makeRequest.get(`getAdmin/${getUserId()}`,{},(task)=>{
+            if(task.isSuccessful()){
+                if(task.exists()){
+                    setMe(new adminUserEle(task.getData()))
+                }else{
+                    setError(true)
+                    toast('Acct not found',0)
+                }
+            }else{
+                handleError(task)
+            }
+        })
         //Profile pic
         makeRequest.get(`fileExists/dp/${getUserId()}`,{},(task)=>{
             if(task.isSuccessful()){
@@ -79,12 +109,21 @@ export function Admin(){
       });
     }
 
+    function isPermGranted(index:number){
+        if(me){
+            const prefix = index==1?'pd':index==2?'pp':'pm'
+            return me.getPerm(prefix+'1')=='1' || me.getPerm(prefix+'2')=='1'
+        }
+        return true
+    }
+
+
     return <div style={{
         width: dimen.width,
         height: dimen.height
     }}>
         <ErrorCont isNgt={false} visible={error} retry={()=>{
-            setError(false)
+            getAdminInfo()
         }}/>
         <div className="prgcont" style={{display:load?"flex":"none"}}>
             <div className="hlc" style={{
@@ -219,7 +258,11 @@ export function Admin(){
                     overflowY:'scroll',
                     backgroundColor:'rgba(0,0,0,0.02)'
                 }}>
-                    {tabPos==0?<AdminDashboard />:LoadLay()}
+                    {tabPos===0?((me && me.getRole()=='0')?<AdminDashboard me={me} />:<NotAllowed />):
+                    tabPos===1?((isPermGranted(1) && me)?<AdminDirectory me={me}/>:<NotAllowed/>)
+                    :tabPos===2?(isPermGranted(2)?<AdminPayments />:<NotAllowed />)
+                    :tabPos===3?(isPermGranted(3)?<MsgTBD />:<NotAllowed />)
+                    :tabPos===4?((me && me.getRole()=='0' && me.getUserId()==masterID)?<AdminSettings />:<NotAllowed />):<LoadLay />}
                 </div>
             </div>
         </div>
@@ -246,9 +289,27 @@ export function Admin(){
         </div>
     </div>
 
-    
+    function NotAllowed() {
+        return <div className="ctr" style={{
+            width:'100%',
+            height:'100%'
+        }}>
+            <div className="vlc">
+                <LockOutlined style={{
+                    fontSize:30,
+                    color:mye.mycol.primarycol
+                }} />
+                <Mgin top={20} />
+                <mye.HTv text="Access Denied" />
+                <Mgin top={10} />
+                <mye.Tv text="The admin did not grant you access to this page" />
+            </div>
+        </div>
+    }
 
 }
+
+
 
 
 export function MsgTBD() {

@@ -39,12 +39,12 @@ export class makeRequest{
         });
     }
 
-    static uploadFile(folder:string, filename:string,memid:string,file:File,finise:(task:resHandler)=>void){
+    static uploadFile(folder:string, filename:string,user_id:string,file:File,finise:(task:resHandler)=>void){
         const formData = new FormData();
         formData.append('file', file);
         formData.append('filename', filename);
         formData.append('folder', folder);
-        formData.append('memid', memid);
+        formData.append('user_id', user_id);
 
         axios.post(`${endpoint}/uploadFile`, formData, {
             headers: {

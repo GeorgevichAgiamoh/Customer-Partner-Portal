@@ -722,8 +722,8 @@ export function fixedString(s:string, numDig:number){
     return txt.length>0 && isDigit(txt)
   }
 
-  export function getPayRef(payId:string,amt:string,memid:string,uuid?:string){
-    return `schoolsilo-${payId}-${amt}-${memid}-${(uuid || Date.now().toString())}`
+  export function getPayRef(payId:string,amt:string,user_id:string,uuid?:string){
+    return `schoolsilo-${payId}-${amt}-${user_id}-${(uuid || Date.now().toString())}`
   }
 
   export function CopyMan(prop:{text:string,toast:()=>void}){
@@ -768,7 +768,7 @@ export function fixedString(s:string, numDig:number){
 
   export const pricePerShare = 10
 
-  export const masterID = '55555555'
+  export const masterID = '0' //TODO set master ID
 
   export const spin_genders:{[key:string]:string} = {
     'M': 'Male',

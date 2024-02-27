@@ -9,13 +9,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import tabcard from "../../../assets/tabcard.png"
 import { PoweredBySSS, getGreeting } from "../../../helper/schoolsilo";
 import naira from "../../../assets/naira.png"
-import { adminHighlights, annEle } from "../../classes/models";
+import { adminHighlights, adminUserEle, annEle } from "../../classes/models";
 
 
 
 
 
-export function AdminDashboard(){
+export function AdminDashboard(mainprop:{me:adminUserEle}){
     const location = useLocation()
     const navigate = useNavigate()
     const mye = new myEles(false)
@@ -175,9 +175,12 @@ export function AdminDashboard(){
                 <ArrowRightOutlined className="icon" />
              </div>}
              right={<div id="clk" style={{
-                display:undefined
+                display:mainprop.me.getUserId()!= masterID?'none':undefined
              }} className="hlc" onClick={()=>{
-                
+                if(mainprop.me.getUserId()!= masterID){
+                    toast('Only super admins can make announcement',0)
+                    return
+                }
                 setShowNewAnn(true)
              }}>
                 <mye.HTv text="Make Announcement" color={mye.mycol.primarycol} size={12} />
