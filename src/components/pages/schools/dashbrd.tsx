@@ -1,54 +1,40 @@
-import { PersonOutline, SavingsOutlined, VolumeUpOutlined, ArrowRightOutlined, Close, AttachFile, Mail } from "@mui/icons-material";
+import { PersonOutline, VolumeUpOutlined, ArrowRightOutlined, ArrowCircleRightOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import useWindowDimensions from "../../../helper/dimension";
-import { myEles, setTitle, appName, Mgin, LrText, BtnIcn, icony, IconBtn, ErrorCont, MyPieChart, hexToRgba, masterID, goUrl,CopyMan } from "../../../helper/general";
-import { adminUserEle, annEle, partnerBasicinfo, partnerGeneralinfo, partnerHighlights, payStat } from "../../classes/models";
-import { CircularProgress } from "@mui/material";
-import Toast from "../../toast/toast";
-import { getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
+import { myEles, setTitle, appName, Mgin, LrText, icony, ErrorCont, hexToRgba, CopyMan, goUrl } from "../../../helper/general";
+import { annEle, schoolBasicinfo, schoolGeneralinfo } from "../../classes/models";
 import { useLocation, useNavigate } from "react-router-dom";
-import tabcard from "../../../assets/tabcard.png"
+import { CircularProgress, LinearProgress } from "@mui/material";
+import Toast from "../../toast/toast";
+import { makeRequest, resHandler } from "../../../helper/requesthandler";
 import { PoweredBySSS, getGreeting } from "../../../helper/schoolsilo";
-import naira from "../../../assets/naira.png"
+import tabcard from "../../../assets/tabcard.png"
 
 
 
 
-
-export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGeneralinfo,}){
+export function SchoolDashboard(mainprop:{sbi:schoolBasicinfo,sgi?:schoolGeneralinfo,goto:(action:number)=>void}){
     const location = useLocation()
     const navigate = useNavigate()
-    const mye = new myEles(false)
+    const mye = new myEles(false);
     const myKey = Date.now()
-    const dimen = useWindowDimensions()
+    const dimen = useWindowDimensions();
     const[anns,setAnns] = useState<annEle[]>([])
-    const[hele,setHele] = useState<partnerHighlights>()
+
 
     useEffect(()=>{
-        setTitle(`Partner Dashboard - ${appName}`)
-        getHgl()
+        setTitle(`School Dashboard - ${appName}`)
+        getAnns()
     },[])
 
     function handleError(task:resHandler){
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/schoolLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
-    }
-
-    function getHgl(){
-        setError(false)
-        getAnns()
-        makeRequest.get(`getPartnerHighlights/${getUserId()}`,{},(task)=>{
-            if(task.isSuccessful()){
-                setHele(new partnerHighlights(task.getData()))
-            }else{
-                handleError(task)
-            }
-        })
     }
 
     function getAnns(){
@@ -95,6 +81,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
       });
     }
 
+
     return <div style={{
         width:'100%',
         boxSizing:'border-box',
@@ -102,7 +89,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
     }}>
         <ErrorCont isNgt={false} visible={error} retry={()=>{
             setError(false)
-            getHgl()
+            getAnns()
         }}/>
         <div className="prgcont" style={{display:load?"flex":"none"}}>
             <div className="hlc" style={{
@@ -124,22 +111,77 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
                 })
             }} />
         <Mgin top={20} />
-        <mye.BTv text={`Hello ${mainprop.pbi.getFirstName()}`} size={26} color={mye.mycol.primarycol} />
-        <Mgin top={20} />
-        <mye.Tv text={`Good ${getGreeting()}, welcome to your dashboard`} />
-        <Mgin top={30} />
-        <div style={{
-            display:'flex',
-            width:'100%',
-            flexWrap:'wrap',
-            alignItems:'center'
-        }}>
-            <Tab1 icon={PersonOutline} title="Customers" value={hele?hele.getTotalSchools():'...'} color={mye.mycol.green} />
-            <Tab1  title="Commissions" value={hele?hele.getTotalCommissionsAmt():'...'} color={mye.mycol.green} />
-            <Tab1  title="Partner Link" value={`https://portal.schoolsilo.cloud/schoolRegister/${mainprop.pbi.getPartnerID()}`} isLink color={mye.mycol.green} />
-            <Tab1  title="Partner Code" value={mainprop.pbi.getPartnerID()} color={mye.mycol.green} />
+        <div>
+            <mye.HTv text={`Hello, ${mainprop.sbi.getSchoolName()}`} size={26} color={mye.mycol.primarycol} />
+            <Mgin top={20} />
+            <mye.Tv text={`Good ${getGreeting()}, welcome to your dashboard`} />
         </div>
-        <Mgin top={20} />
+        <Mgin top={30} />
+        <div id="lshdw" style={{
+            backgroundColor:mye.mycol.white,
+            borderRadius:10,
+            padding:dimen.dsk?40:20,
+            boxSizing:'border-box',
+            width:'100%'
+        }}>
+            <LrText 
+            left={<div className="hlc">
+                <PersonOutline style={{
+                    fontSize:25,
+                    color: mye.mycol.secondarycol
+                }} />
+                <Mgin right={10} />
+                <mye.BTv text="Account Verification" size={20} color={mye.mycol.secondarycol} />
+            </div>}
+
+            right={<div style={{
+                padding:'5px 10px',
+                borderRadius:50,
+                backgroundColor: mainprop.sbi.isVerified()?mye.mycol.greenstrip:mye.mycol.redstrip
+            }}>
+                <mye.Tv text={mainprop.sbi.isVerified()?'Verified':'Unverified'} color={mainprop.sbi.isVerified()?mye.mycol.green:mye.mycol.red} />
+            </div>}
+            />
+            <Mgin top={15} />
+            <div style={{
+                backgroundColor: mye.mycol.imghintr2,
+                borderRadius:10,
+                padding:10,
+                width:'100%',
+                display:'flex',
+                alignItems:'center'
+            }}>
+                <div style={{
+                    flex:1
+                }}>
+                    <LinearProgress variant="determinate" value={(mainprop.sbi.isVerified() && mainprop.sgi)?100:(mainprop.sgi)?50:25} 
+                    sx={{
+                        height: 10, // Set the height of the progress bar
+                        borderRadius: 5, // Set the border radius for rounded corners
+                        backgroundColor: mye.mycol.imghintr2, // Set the background color
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: '#4caf50', // Set the progress bar color
+                        },
+                      }} />
+                </div>
+                <Mgin right={10} />
+                <mye.BTv text={((mainprop.sbi.isVerified() && mainprop.sgi)?'100':(mainprop.sgi)?'50':'25')+'%'} color={mye.mycol.primarycol} size={20}  />
+            </div>
+            <Mgin top={15} />
+            <LrText 
+            left={<mye.Tv text="" />}
+            right={<div id="clk" className="hlc" onClick={()=>{
+                    mainprop.goto(3)
+                }} >
+                <mye.Tv text="Continue Verification" color={mye.mycol.primarycol}/>
+                <Mgin right={5} />
+                <ArrowCircleRightOutlined className="icon" />
+            </div>}
+            />
+        </div>
+        {/* <Mgin top={20} />
+        <Tab1  title="Portal Link" value={`https://schoolsilo.cloud/portal/${mainprop.sbi.getSchoolID()}`} isLink color={mye.mycol.green} /> */}
+        <Mgin top={40} />
         <div id="lshdw" style={{
             width:'100%',
             padding:20,
@@ -162,21 +204,19 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
                 })
             }
              <Mgin top={20} />
-             <LrText 
-             left={<div style={{
-                display:'none'
-             }} id="clk" className="hlc" onClick={()=>{
+             <div id="clk" className="hlc" onClick={()=>{
 
              }}>
-                <mye.HTv text="View All" color={mye.mycol.primarycol} size={12} />
+                <mye.HTv text="View Announcements" color={mye.mycol.primarycol} size={12} />
                 <Mgin right={10} />
                 <ArrowRightOutlined className="icon" />
-             </div>}
-             right={<div></div>}
-             />
+             </div>
         </div>
         <PoweredBySSS />
     </div>
+
+    
+    
 
     function AnnLay(prop:{ele:annEle}) {
         return <div style={{
@@ -236,7 +276,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
                 {prop.icon?<prop.icon style={{
                     fontSize:20,
                     color: prop.color
-                }} />:<img src={naira} height={20} alt="." color={prop.color} />}
+                }} />:<div></div>}
             </div>
             <div style={{
                 position:'absolute',
@@ -257,4 +297,5 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
             </div>
         </div>
     }
+
 }

@@ -1,8 +1,7 @@
-import { PersonOutline, SavingsOutlined, VolumeUpOutlined, ArrowRightOutlined, Close, AttachFile, Mail } from "@mui/icons-material";
+import { PersonOutline, SavingsOutlined, VolumeUpOutlined, ArrowRightOutlined, Close, AttachFile, Mail, BusinessOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import useWindowDimensions from "../../../helper/dimension";
 import { myEles, setTitle, appName, Mgin, LrText, BtnIcn, icony, IconBtn, ErrorCont, MyPieChart, hexToRgba, masterID, goUrl,CopyMan } from "../../../helper/general";
-import { adminUserEle, annEle, partnerBasicinfo, partnerGeneralinfo, partnerHighlights, payStat } from "../../classes/models";
 import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
 import { getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
@@ -10,22 +9,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import tabcard from "../../../assets/tabcard.png"
 import { PoweredBySSS, getGreeting } from "../../../helper/schoolsilo";
 import naira from "../../../assets/naira.png"
+import { adminHighlights, annEle } from "../../classes/models";
 
 
 
 
 
-export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGeneralinfo,}){
+export function AdminDashboard(){
     const location = useLocation()
     const navigate = useNavigate()
     const mye = new myEles(false)
     const myKey = Date.now()
     const dimen = useWindowDimensions()
+    const[showNewAnn, setShowNewAnn] = useState(false)
+    const[atitle, setATitle] = useState('')
+    const[amsg, setAMsg] = useState('')
     const[anns,setAnns] = useState<annEle[]>([])
-    const[hele,setHele] = useState<partnerHighlights>()
+    const[hele,setHele] = useState<adminHighlights>()
 
     useEffect(()=>{
-        setTitle(`Partner Dashboard - ${appName}`)
+        setTitle(`Admin Dashboard - ${appName}`)
         getHgl()
     },[])
 
@@ -33,7 +36,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -42,9 +45,9 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
     function getHgl(){
         setError(false)
         getAnns()
-        makeRequest.get(`getPartnerHighlights/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`getAdminHighlights`,{},(task)=>{
             if(task.isSuccessful()){
-                setHele(new partnerHighlights(task.getData()))
+                setHele(new adminHighlights(task.getData()))
             }else{
                 handleError(task)
             }
@@ -124,7 +127,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
                 })
             }} />
         <Mgin top={20} />
-        <mye.BTv text={`Hello ${mainprop.pbi.getFirstName()}`} size={26} color={mye.mycol.primarycol} />
+        <mye.BTv text={`Hello Admin`} size={26} color={mye.mycol.primarycol} />
         <Mgin top={20} />
         <mye.Tv text={`Good ${getGreeting()}, welcome to your dashboard`} />
         <Mgin top={30} />
@@ -134,10 +137,9 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
             flexWrap:'wrap',
             alignItems:'center'
         }}>
-            <Tab1 icon={PersonOutline} title="Customers" value={hele?hele.getTotalSchools():'...'} color={mye.mycol.green} />
-            <Tab1  title="Commissions" value={hele?hele.getTotalCommissionsAmt():'...'} color={mye.mycol.green} />
-            <Tab1  title="Partner Link" value={`https://portal.schoolsilo.cloud/schoolRegister/${mainprop.pbi.getPartnerID()}`} isLink color={mye.mycol.green} />
-            <Tab1  title="Partner Code" value={mainprop.pbi.getPartnerID()} color={mye.mycol.green} />
+            <Tab1 icon={BusinessOutlined} title="Customers/Schools" value={hele?hele.getTotalSchools():'...'} color={mye.mycol.green} />
+            <Tab1 icon={PersonOutline} title="Partners" value={hele?hele.getTotalPartners():'...'} color={mye.mycol.green} />
+            <Tab1 icon={SavingsOutlined} title="Total Payments" value={hele?hele.getTotalPayments():'...'} color={mye.mycol.green} />
         </div>
         <Mgin top={20} />
         <div id="lshdw" style={{
@@ -172,10 +174,126 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
                 <Mgin right={10} />
                 <ArrowRightOutlined className="icon" />
              </div>}
-             right={<div></div>}
+             right={<div id="clk" style={{
+                display:undefined
+             }} className="hlc" onClick={()=>{
+                
+                setShowNewAnn(true)
+             }}>
+                <mye.HTv text="Make Announcement" color={mye.mycol.primarycol} size={12} />
+                <Mgin right={10} />
+                <ArrowRightOutlined className="icon" />
+             </div>}
              />
         </div>
         <PoweredBySSS />
+        {/* Absolutely positioned (dialog) */}
+        <div className="ctr" style={{
+            display:showNewAnn?undefined:'none',
+            position:'absolute',
+            top:0,
+            left:0,
+            width:'100%',
+            height:'100%',
+            boxSizing:'border-box',
+            backgroundColor:'rgba(0,0,0,0.1)',
+            padding: dimen.dsk?'10% 25%':0
+        }}>
+            <div style={{
+                backgroundColor: mye.mycol.bkg,
+                width:'100%',
+                height:'100%',
+                display:'flex',
+                flexDirection:'column',
+                borderRadius:10
+            }}>
+                <div style={{
+                    backgroundColor:mye.mycol.primarycol,
+                    padding:'10px 20px',
+                    borderRadius:'10px 10px 0 0'
+                }}>
+                    <LrText 
+                    left={<mye.HTv text="New Announcement" color={mye.mycol.white} size={16} />}
+                    right={<BtnIcn icon={Close} color={mye.mycol.white} ocl={()=>{
+                        setShowNewAnn(false)
+                    }}  />}
+                    />
+                </div>
+                <div style={{
+                    width:'100%',
+                    flex:1,
+                    boxSizing:'border-box',
+                    padding:'15px 30px',
+                    display:'flex',
+                    flexDirection:'column'
+                }}>
+                    <Mgin top={20} />
+                    <input className="tinp"
+                        type="text"
+                        value={atitle}
+                        placeholder="Title"
+                        onChange={(e)=>{
+                            setATitle(e.target.value)
+                        }}
+                        style={{
+                            width:'100%',
+                        }}
+                    />
+                    <Mgin top={5} />
+                    <div style={{width:'100%',height:1,backgroundColor:'rgba(0,0,0,0.1)'}}></div>
+                    <textarea
+                        value={amsg}
+                        placeholder="Type message here"
+                        onChange={(e)=>{
+                            setAMsg(e.target.value)
+                        }}
+                        style={{
+                            flex:1,
+                            marginTop:10,
+                            width:'100%',
+                            border:'none',
+                            outline:'none',
+                            resize:'none'
+                        }}
+                    />
+                    <div style={{width:'100%',height:1,backgroundColor:'rgba(0,0,0,0.1)'}}></div>
+                    <Mgin top={20} />
+                    <div className="hlc" style={{
+                        alignSelf:'flex-end'
+                    }}>
+                        <AttachFile id='clk' className="icon" style={{
+                            fontSize:18
+                        }} />
+                        <Mgin right={10} />
+                        <IconBtn icon={Mail} mye={mye} text={"SUBMIT"} ocl={()=>{
+                            if(atitle.trim().length ==0){
+                                toast('Please enter title',0)
+                                return;
+                            }
+                            if(amsg.trim().length <3){
+                                toast('Please enter message',0)
+                                return;
+                            }
+                            setLoad(true)
+                            makeRequest.post('setAnnouncements',{
+                                title:atitle.trim(),
+                                msg:amsg.trim(),
+                                time:Date.now().toString()
+                            },(task)=>{
+                                if(task.isSuccessful()){
+                                    toast('Announcement added',1)
+                                    setShowNewAnn(false)
+                                    getAnns()
+                                }else{
+                                    setLoad(false)
+                                    handleError(task)
+                                }
+                            })
+                        }}  width={120}/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     function AnnLay(prop:{ele:annEle}) {

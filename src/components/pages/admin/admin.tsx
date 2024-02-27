@@ -2,19 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import useWindowDimensions from "../../../helper/dimension";
 import { Btn, ErrorCont, LoadLay, LrText, Mgin, myEles } from "../../../helper/general";
 import { Add, ArrowDropDown, DeveloperModeOutlined, LockOutlined, Menu, NotificationsActiveOutlined, PersonOutline } from "@mui/icons-material";
-import { PartnerDashboard } from "./dashbrd";
-import { PartnerPayments } from "./payments/payments";
 import { endpoint, getUserId, makeRequest } from "../../../helper/requesthandler";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
-import { partnerBasicinfo, partnerFinancialinfo, partnerGeneralinfo } from "../../classes/models";
-import { PartnerNav } from "../nav";
-import { PartnerCustomers } from "./customers/customers";
-import { PartnerProfile } from "./partnerprofile";
+import { AdminNav } from "../nav";
+import { AdminDashboard } from "./dashbrd";
 
 
-export function Partners(){
+export function Admin(){
     const[myKey, setMyKey] = useState(Date.now())
     const mye = new myEles(false);
     const navigate = useNavigate()
@@ -22,19 +18,15 @@ export function Partners(){
     const[showNav, setShowNav] = useState(false)
     const[forceProfileEdit, setForceProfileEdit] = useState(false)
     const[tabPos, setTabPos] = useState(0)
-    const[pbi, setPBI] = useState<partnerBasicinfo>()
-    const[pgi, setPGI] = useState<partnerGeneralinfo>()
-    const[pfi, setPFI] = useState<partnerFinancialinfo>()
-    const[yearsOwing, setYearsOwing] = useState<string[]>([])
     const[ppic,setPpic] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null);
     
     const tabs = [
         'Dashboard',
-        'Customers',
+        'Directory',
         'Payments',
         'Messages',
-        'My Profile',
+        'Settings',
         'Logout'
     ]
 
@@ -42,57 +34,20 @@ export function Partners(){
         makeRequest.get('checkTokenValidity',{},(task)=>{
           if(task.isSuccessful()){
             //OK
-            getPartnerInfo()
+            getAdminInfo()
           }else{
-            navigate('/partnerLogin?rdr=')
+            navigate('/adminLogin?rdr=')
           }
         })
     },[])
 
-
-    function getPartnerInfo(){
-        makeRequest.get(`getPartnerBasicInfo/${getUserId()}`,{},(task)=>{
-            if(task.isSuccessful()){
-                const pbi = new partnerBasicinfo(task.getData())
-                setPBI(pbi)
-                setMyKey(Date.now())
-                makeRequest.get(`getPartnerGeneralInfo/${getUserId()}`,{},(task)=>{
-                    if(task.isSuccessful()){
-                        if(task.exists()){
-                            setPGI(new partnerGeneralinfo(task.getData()))
-                            makeRequest.get(`getPartnerFinancialInfo/${getUserId()}`,{},(task)=>{
-                                if(task.isSuccessful()){
-                                    if(task.exists()){
-                                        setPFI(new partnerFinancialinfo(task.getData()))
-                                        setMyKey(Date.now())
-                                    }
-                                }else{
-                                    setError(true)
-                                }
-                            })
-                        }
-                    }else{
-                        setError(true)
-                    }
-                })
-            }else{
-                setError(true)
-            }
-        })
-        
-
+    function getAdminInfo(){
         //Profile pic
         makeRequest.get(`fileExists/dp/${getUserId()}`,{},(task)=>{
             if(task.isSuccessful()){
                 setPpic(`${endpoint}/getFile/dp/${getUserId()}`)
             }
         })
-    }
-
-    function updateYearsOwed(ny:string){
-        const oyo:string[] =  [...yearsOwing]
-        oyo.push(ny)
-        setYearsOwing(oyo)
     }
 
 
@@ -130,7 +85,6 @@ export function Partners(){
     }}>
         <ErrorCont isNgt={false} visible={error} retry={()=>{
             setError(false)
-            getPartnerInfo()
         }}/>
         <div className="prgcont" style={{display:load?"flex":"none"}}>
             <div className="hlc" style={{
@@ -161,12 +115,12 @@ export function Partners(){
                 height:'100%',
                 display: dimen.dsk?undefined:'none'
             }}>
-                <PartnerNav  key={myKey+0.2} currentTab={tabPos} mye={mye} isMobile={!dimen.dsk} ocl={(pos)=>{
+                <AdminNav  key={myKey+0.2} currentTab={tabPos} mye={mye} isMobile={!dimen.dsk} ocl={(pos)=>{
                     setTabPos(pos)
                     setForceProfileEdit(false)
                     if(pos==5){
                         makeRequest.get('logout',{},(task)=>{
-                            navigate('/partnerLogin')
+                            navigate('/adminLogin')
                         })
                     }
                 }} showy={()=>{
@@ -226,7 +180,7 @@ export function Partners(){
                                                     },2000)
                                                 }else{
                                                     if(task.isLoggedOut()){
-                                                        navigate('/partnerLogin')
+                                                        navigate('/adminLogin')
                                                         return
                                                     }
                                                     toast(task.getErrorMsg(),0)
@@ -265,14 +219,7 @@ export function Partners(){
                     overflowY:'scroll',
                     backgroundColor:'rgba(0,0,0,0.02)'
                 }}>
-                    {(pbi && pbi.isDeleted())?<ShowProfileDeleted />:(pbi && !pbi!.isVerified() && tabPos!=4)?<AskToVerif />:pbi?tabPos===0?<PartnerDashboard pbi={pbi} pgi={pgi}
-                     />:tabPos==1?<PartnerCustomers pbi={pbi} />:tabPos==2?<PartnerPayments />:tabPos==3?<MsgTBD />:tabPos==4?<PartnerProfile goto={(a)=>{
-                        if(a==0){
-                            getPartnerInfo()
-                        }
-                        setTabPos(a)
-                        setMyKey(Date.now())
-                    }} />:LoadLay():LoadLay()}
+                    {tabPos==0?<AdminDashboard />:LoadLay()}
                 </div>
             </div>
         </div>
@@ -284,13 +231,13 @@ export function Partners(){
             height:'100%',
             display: (!dimen.dsk && showNav) ? undefined:'none'
         }}>
-            <PartnerNav key={myKey+0.3} currentTab={tabPos} mye={mye} isMobile={!dimen.dsk} ocl={(pos)=>{
+            <AdminNav key={myKey+0.3} currentTab={tabPos} mye={mye} isMobile={!dimen.dsk} ocl={(pos)=>{
                 setForceProfileEdit(false)
                 setShowNav(false)
                 setTabPos(pos)
                 if(pos==5){
                     makeRequest.get('logout',{},(task)=>{
-                        navigate('/partnerLogin')
+                        navigate('/adminLogin')
                     })
                 }
             }} showy={()=>{
@@ -299,50 +246,7 @@ export function Partners(){
         </div>
     </div>
 
-    function AskToVerif() {
-        return <div className="ctr" style={{
-            width:'100%',
-            height:'100%'
-        }}>
-            <div className="vlc">
-                <PersonOutline style={{
-                    fontSize:30,
-                    color:mye.mycol.primarycol
-                }} />
-                <Mgin top={20} />
-                <mye.HTv text={pgi?"Pending Verification":'Complete Profile'} />
-                <Mgin top={10} />
-                <mye.Tv text={pgi?'Your profile is pending verification by the admin. Please check back later':'Please click button below to complete your profile'} />
-                <div style={{
-                    display:pgi?'none':undefined
-                }}>
-                    <Mgin top={10} />
-                    <Btn txt="COMPLETE PROFILE" width={150} onClick={()=>{
-                        setTabPos(4)
-                        setMyKey(Date.now())
-                    }} />
-                </div>
-            </div>
-        </div>
-    }
-
-    function ShowProfileDeleted() {
-        return <div className="ctr" style={{
-            width:'100%',
-            height:'100%'
-        }}>
-            <div className="vlc">
-                <LockOutlined style={{
-                    fontSize:30,
-                    color:mye.mycol.primarycol
-                }} />
-                <Mgin top={20} />
-                <mye.HTv text={'Profile Deleted'} />
-                <Mgin top={10} />
-                <mye.Tv text={'Your profile has been deleted by the admin. Please reach out to resolve'} center />
-            </div>
-        </div>
-    }
+    
 
 }
 

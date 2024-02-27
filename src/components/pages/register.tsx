@@ -15,6 +15,172 @@ import { defVal, schoolBasicinfo } from "../classes/models";
 
 
 
+
+export function RegisterAdmin(){
+    const qry = useQuery();
+    const navigate = useNavigate()
+    const mye = new myEles(false);
+    const dimen = useWindowDimensions();
+    const[eml,setEml] = useState('')
+    const[pwd1,setPwd1] = useState('')
+    const[pwd2,setPwd2] = useState('')
+    const[nar,setNar] = useState(false)
+
+    useEffect(()=>{
+        setTitle(`Create Partner Account - ${appName}`)
+    },[])
+
+    
+    const[load, setLoad]=useState(false)
+    const[loadMsg, setLoadMsg]=useState('Just a sec')
+    const[error, setError]=useState(false)
+    const[toastMeta, setToastMeta] = useState({visible: false,msg: "",action:2,invoked:0})
+    const[timy, setTimy] = useState<{timer?:NodeJS.Timeout}>({timer:undefined});
+    function toast(msg:string, action:number,delay?:number){
+      var _delay = delay || 5000
+      setToastMeta({
+          action: action,
+          msg: msg,
+          visible:true,
+          invoked: Date.now()
+      })
+      clearTimeout(timy.timer)
+      setTimy({
+          timer:setTimeout(()=>{
+              if(Date.now()-toastMeta.invoked > 4000){
+                  setToastMeta({
+                      action:2,
+                      msg:"",
+                      visible:false,
+                      invoked: 0
+                  })
+              }
+          },_delay)
+      });
+    }
+    return <div className="vlc" style={{
+        width:dimen.width,
+        height:dimen.height
+    }}>
+        <ErrorCont isNgt={false} visible={error} retry={()=>{
+
+        }}/>
+        <div className="prgcont" style={{display:load?"flex":"none"}}>
+            <div className="hlc" style={{
+                backgroundColor:mye.mycol.bkg,
+                borderRadius:10,
+                padding:20,
+            }}>
+                <CircularProgress style={{color:mye.mycol.primarycol}}/>
+                <Mgin right={20} />
+                <mye.Tv text={loadMsg} />
+            </div>
+        </div>
+        <Toast isNgt={false} msg= {toastMeta.msg} action={toastMeta.action} visible={toastMeta.visible} canc={()=>{
+                setToastMeta({
+                    action:2,
+                    msg:"",
+                    visible:false,
+                    invoked:0,
+                })
+            }} />
+        <div className="vlc" style={{
+            width:dimen.dsk?500:'100%',
+            padding:dimen.dsk?0:20,
+            boxSizing:'border-box'
+        }}>
+            <Mgin top={40} />
+            <mye.HTv text="Create an Account" size={35} />
+            <Mgin top={20} />
+            <MsgAlert icon={InfoOutlined} mye={mye} msg="Fields marked * are compulsory" />
+            <Mgin top={20} />
+            <div style={{
+                width:'100%'
+            }}>
+                <mye.Tv text="*Email Address" />
+                <Mgin top={5} />
+                <EditTextFilled hint="Enter Email Address" value={eml} noSpace min={0} recv={(v)=>{
+                    setEml(v.trim())
+                }} />
+            </div>
+            <Mgin top={15} />
+            <div style={{
+                width:'100%'
+            }}>
+                <mye.Tv text="*Password" />
+                <Mgin top={5} />
+                <EditTextFilled hint="******" value={pwd1} min={6} pwd recv={(v)=>{
+                    setPwd1(v.trim())
+                }} />
+            </div>
+            <Mgin top={15} />
+            <div style={{
+                width:'100%'
+            }}>
+                <mye.Tv text="*Confirm Password" />
+                <Mgin top={5} />
+                <EditTextFilled hint="******" value={pwd2} min={6} pwd recv={(v)=>{
+                    setPwd2(v.trim())
+                }} />
+            </div>
+            <Mgin top={20} />
+            <div className="hlc" style={{
+                alignSelf:'flex-start'
+            }}>
+                <MyCB checked={nar} mye={mye} ocl={()=>{
+                    setNar(!nar)
+                }} />
+                <mye.BTv text="I am not a robot" size={14} />
+            </div>
+            <Mgin top={15} />
+            <Btn txt="CREATE ACCOUNT" onClick={()=>{
+                if(!isEmlValid(eml)){
+                    toast('Invalid Email',0)
+                    return
+                }
+                if(pwd1.length < 6){
+                    toast('Invalid Password',0)
+                    return
+                }
+                if(pwd1 != pwd2){
+                    toast('password mismatch',0)
+                    return
+                }
+                if(!nar){
+                    toast('Please confirm you are not a robot',0)
+                    return
+                }
+                setLoad(true)
+                makeRequest.post('registerAdmin',{
+                    email:eml,
+                    password:pwd1,
+                },(task)=>{
+                    setLoad(false)
+                    if(task.isSuccessful()){
+                        navigate('/adminLogin')
+                    }else{
+                        toast(task.getErrorMsg()+' Maybe login instead',0)
+                    }
+                },true)
+            }} />
+            <Mgin top={20} />
+            <div className="hlc">
+                <mye.Tv text="Already have an account?" color={mye.mycol.primarycol} />
+                <Mgin right={10} />
+                <mye.Tv text="Sign In" color={mye.mycol.primarycol} onClick={()=>{
+                    navigate(`/adminLogin?eml=${eml}`)
+                }} />
+            </div>
+            <PoweredBySSS/>
+        </div>
+    </div>
+
+}
+
+
+
+
+
 export function RegisterPartner(){
     const qry = useQuery();
     const navigate = useNavigate()
@@ -328,7 +494,7 @@ export function RegisterSchool(){
             <Mgin top={20} />
             <MsgAlert icon={InfoOutlined} mye={mye} msg="Fields marked * are compulsory" />
             <Mgin top={20} />
-            <div className="hlc" style={{
+            <div style={{
                 width:'100%'
             }}>
                 <mye.Tv text="*School Name" />
@@ -416,10 +582,6 @@ export function RegisterSchool(){
                 }
                 if(pwd1 != pwd2){
                     toast('password mismatch',0)
-                    return
-                }
-                if(pcode.length > 0 && pcode.length < 3){
-                    toast('Invalid partner code. Remove if none',0)
                     return
                 }
                 if(!nar){
@@ -517,7 +679,7 @@ export function PaySchoolRegFee(){
             
                 email: sbi!.getEmail(),
             
-                amount: 5000 * 100, //In kobo
+                amount: 20000 * 100, //In kobo
             
                 currency: 'NGN', 
             
@@ -643,6 +805,13 @@ export function PaySchoolRegFee(){
             <PaystackExplanation />
             <Btn txt="PAY" onClick={()=>{
                 payWithPaystack()
+            }} />
+            <Mgin top={20} />
+            <mye.Tv text="BACK TO HOME" color={mye.mycol.primarycol} onClick={()=>{
+                setLoad(true)
+                makeRequest.get('logout',{},(task)=>{
+                    navigate('/schoolLogin')
+                })
             }} />
         </div>}
     </div>

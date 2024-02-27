@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios"
 
 
 
-export const endpoint = 'http://127.0.0.1:8000/api'//https://api.schoolsilo.cloud/api
+export const endpoint = 'https://api.schoolsilo.cloud/api'//http://127.0.0.1:8000/api
 
 export function getACT(){
     return localStorage.getItem('schoolsilo_act') ?? ''

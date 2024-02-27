@@ -262,6 +262,24 @@ export class partnerHighlights{
 }
 
 
+export class adminHighlights{
+    data:any
+    constructor(data:any){
+        this.data = data
+    }
+    getTotalSchools(){
+        return this.data['totalSchools']
+    }
+    getTotalPartners(){
+        return this.data['totalPartners']
+    }
+    getTotalPayments(){
+        return (this.data['totalPayments'] * 20000).toString()
+    }
+}
+
+
+
 export class annEle{
     data:any
     constructor(data:any){

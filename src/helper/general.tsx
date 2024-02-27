@@ -722,10 +722,6 @@ export function fixedString(s:string, numDig:number){
     return txt.length>0 && isDigit(txt)
   }
 
-  export function amAdmin(){
-    return localStorage.getItem('iaa')=='1'
-  }
-
   export function getPayRef(payId:string,amt:string,memid:string,uuid?:string){
     return `schoolsilo-${payId}-${amt}-${memid}-${(uuid || Date.now().toString())}`
   }
@@ -797,4 +793,4 @@ export function fixedString(s:string, numDig:number){
     'W': 'Colleague',
   }
 
-  export const paystackPK = ''
+  export const paystackPK = 'pk_live_39b85ea0d5511afec94de96966c1bf60f4b3ad37'

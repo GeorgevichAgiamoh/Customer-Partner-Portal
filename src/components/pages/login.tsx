@@ -41,7 +41,18 @@ export function getWhoRegister(who:string){
     if(who == '1'){
         return 'partnerRegister'
     }
-    return 'Admin'
+    return 'adminRegister'
+}
+
+
+export function getWhoDashboard(who:string){
+    if(who == '0'){
+        return 'schooldash'
+    }
+    if(who == '1'){
+        return 'partnerdash'
+    }
+    return 'admindash'
 }
 
 
@@ -352,7 +363,8 @@ export function ResetPassword(){
                 setLoad(true)
                 makeRequest.post('resetPassword',{
                     token: token,
-                    pwd:pwd1
+                    pwd:pwd1,
+                    type: who
                 },(task)=>{
                     setLoad(false)
                     if(task.isSuccessful()){
@@ -376,7 +388,7 @@ export function ResetPassword(){
 
 export function MailLogin(mainprop:{acctType:number}){
     const qry = useQuery();
-    const rdr  = qry.get('rdr')||""
+    const rdr  = qry.get('rdr')||getWhoDashboard(mainprop.acctType.toString())
     const mye = new myEles(false);
     const dimen = useWindowDimensions();
     const[eml,setEml] = useState(qry.get('eml') ?? '')
@@ -479,7 +491,7 @@ export function MailLogin(mainprop:{acctType:number}){
             <Mgin top={10} />
             <LrText left={<mye.Tv text="" color={mye.mycol.primarycol} />} 
             right={<mye.Tv text="reset password" color={mye.mycol.primarycol} onClick={()=>{
-                navigate('/forgotpassword')
+                navigate(`/forgotpassword/${mainprop.acctType}`)
             }} />}/>
             <Mgin top={10} />
             <mye.Tv text="Don't have an account ?"  />
@@ -510,23 +522,14 @@ export function MailLogin(mainprop:{acctType:number}){
             return;
         }
         setLoad(true)
-        makeRequest.post(mainprop.acctType==0?'schoolLogin':'partnerLogin',{
+        makeRequest.post(mainprop.acctType==0?'schoolLogin':mainprop.acctType==1?'partnerLogin':'adminLogin',{
             email: eml,
             password: pwd,
         },(task)=>{
             if(task.isSuccessful()){
                 const uid = task.getData()['id']
                 saveUserId(uid)
-                if(mainprop.acctType==2){
-                    makeRequest.post('authAsAdmin',{},(task)=>{
-                        setLoad(false)
-                        if(task.isSuccessful()){
-                            navigate(`/admindash`)
-                        }else{
-                            toast(task.getErrorMsg(),0)
-                        }
-                    },true)
-                }else if(mainprop.acctType == 0){
+                 if(mainprop.acctType == 0){
                     //Check if user has paid
                     makeRequest.get(`getSchoolBasicInfo/${uid}`,{},(task)=>{
                         setLoad(false)
