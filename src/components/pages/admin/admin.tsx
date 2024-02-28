@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import useWindowDimensions from "../../../helper/dimension";
-import { Btn, ErrorCont, LoadLay, LrText, Mgin, masterID, myEles } from "../../../helper/general";
+import { Btn, ErrorCont, LoadLay, LrText, Mgin, masterEmail, masterID, myEles } from "../../../helper/general";
 import { Add, ArrowDropDown, DeveloperModeOutlined, LockOutlined, Menu, NotificationsActiveOutlined, PersonOutline } from "@mui/icons-material";
-import { endpoint, getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
+import { endpoint, getUserEml, getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
 import { useLocation, useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
@@ -12,6 +12,7 @@ import { adminUserEle } from "../../classes/models";
 import { AdminDirectory } from "./directory/directory";
 import { AdminPayments } from "./payments/payments";
 import { AdminSettings } from "./settings/settings";
+import { AdminMessages } from "./messages/messages";
 
 
 export function Admin(){
@@ -51,7 +52,7 @@ export function Admin(){
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -60,7 +61,9 @@ export function Admin(){
 
     function getAdminInfo(){
         setError(false)
-        makeRequest.get(`getAdmin/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`getAdmin`,{
+            eml: getUserEml()
+        },(task)=>{
             if(task.isSuccessful()){
                 if(task.exists()){
                     setMe(new adminUserEle(task.getData()))
@@ -261,8 +264,8 @@ export function Admin(){
                     {tabPos===0?((me && me.getRole()=='0')?<AdminDashboard me={me} />:<NotAllowed />):
                     tabPos===1?((isPermGranted(1) && me)?<AdminDirectory me={me}/>:<NotAllowed/>)
                     :tabPos===2?(isPermGranted(2)?<AdminPayments />:<NotAllowed />)
-                    :tabPos===3?(isPermGranted(3)?<MsgTBD />:<NotAllowed />)
-                    :tabPos===4?((me && me.getRole()=='0' && me.getUserId()==masterID)?<AdminSettings />:<NotAllowed />):<LoadLay />}
+                    :tabPos===3?((isPermGranted(3) && me)?<AdminMessages me={me} />:<NotAllowed />)
+                    :tabPos===4?((me && me.getRole()=='0' && me.getEmail()==masterEmail)?<AdminSettings />:<NotAllowed />):<LoadLay />}
                 </div>
             </div>
         </div>

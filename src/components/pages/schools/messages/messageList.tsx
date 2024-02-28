@@ -1,10 +1,9 @@
-import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, SavingsOutlined } from "@mui/icons-material"
+import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, SavingsOutlined, MessageOutlined, AddOutlined, ArrowRight } from "@mui/icons-material"
 import { useState, useEffect } from "react"
 import useWindowDimensions from "../../../../helper/dimension"
-import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba } from "../../../../helper/general"
-import { payTypeEle } from "../../../classes/classes"
+import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba, EditTextFilled } from "../../../../helper/general"
 import Barcode from "react-barcode"
-import { partnerComEle, partnerHighlights, } from "../../../classes/models"
+import { msgStat, msgThread, partnerBasicinfo, schoolBasicinfo, } from "../../../classes/models"
 import { CircularProgress } from "@mui/material"
 import Toast from "../../../toast/toast"
 import { getUserId, makeRequest, resHandler } from "../../../../helper/requesthandler"
@@ -15,24 +14,23 @@ import naira from "../../../../assets/naira.png"
 
 
 
-export function PartnerPaymentList(mainprop:{ backy:()=>void}){
+export function SchoolMessagesList(mainprop:{sbi:schoolBasicinfo,actiony:(thread:msgThread, action:number)=>void, backy:()=>void}){
     const location = useLocation()
     const navigate = useNavigate()
     const dimen = useWindowDimensions()
     const mye = new myEles(false)
     const[search, setSearch] = useState('')
     const[showSearch, setShowSearch] = useState(false)
-    const[cpay, setCPay] = useState<partnerComEle>()
-    const[showReceipt, setShowReceipt] = useState(false)
+    const[showPicker, setShowPicker] = useState(false)
     const myKey = Date.now()
     const[optToShow,setOptToShow] = useState(-1)
     const[showingIndex,setShowingIndex] = useState(0)
-    const[pays,setPays] = useState<partnerComEle[]>([])
-    const[stat,setStat] = useState<partnerHighlights>()
+    const[threads,setThreads] = useState<msgThread[]>([])
+    const[stat,setStat] = useState<msgStat>()
     
 
     useEffect(()=>{
-        setTitle(`My Commission - ${appName}`)
+        setTitle(`My Messages - ${appName}`)
         getStats()
     },[])
 
@@ -40,22 +38,22 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/schoolLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
     }
 
-    function getStats(dontGetPays?:boolean){
+    function getStats(dontGetMsgs?:boolean){
         setLoad(true)
         setError(false)
-        makeRequest.get(`getPartnerHighlights/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`getMyMessagesStat/${getUserId()}`,{},(task)=>{
             if(task.isSuccessful()){
-                setStat(new partnerHighlights(task.getData()))
-                if(dontGetPays){
+                setStat(new msgStat(task.getData()))
+                if(dontGetMsgs){
                     setLoad(false)
                 }else{
-                    getThePays(0)
+                    getThreads(0)
                 }
             }else{
                 handleError(task)
@@ -63,21 +61,21 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
         })
     }
 
-    function getThePays(index:number){
+    function getThreads(index:number){
         setShowSearch(false)
         setError(false)
         setLoad(true)
-        makeRequest.get(`getPartnerComs/${getUserId()}`,{
+        makeRequest.get(`getMyMessages/${getUserId()}`,{
             start:(index*20),
             count:20
         },(task)=>{
             setLoad(false)
             if(task.isSuccessful()){
-                const tem:partnerComEle[] = []
+                const tem:msgThread[] = []
                 for(const key in task.getData()){
-                    tem.push(new partnerComEle(task.getData()[key]))
+                    tem.push(new msgThread(task.getData()[key]))
                 }
-                setPays(tem)
+                setThreads(tem)
                 setShowingIndex(index)
             }else{
                 handleError(task)
@@ -141,13 +139,13 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                     invoked:0,
                 })
             }} />
-        <div id="clk" className="hlc" onClick={()=>{
+        {/* <div id="clk" className="hlc" onClick={()=>{
             mainprop.backy()
         }}>
             <ArrowBack className="icon" />
             <Mgin right={10} />
             <mye.HTv text="Go Back" size={14} />
-        </div>
+        </div> */}
         <Mgin top={20} />
         <div style={{
             width:dimen.dsk?500:'100%',
@@ -168,9 +166,14 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 <input className="tinp"
                     type="text"
                     value={search}
-                    placeholder="Search"
+                    placeholder="Search Message By Subject"
                     onChange={(e)=>{
                         setSearch(e.target.value)
+                    }}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            searchIt()
+                        }
                     }}
                     style={{
                         width:'100%',
@@ -182,12 +185,7 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 width:100
             }}>
                 <Btn txt="Search" onClick={()=>{
-                    const sc = search.trim()
-                    if(sc.length < 5){
-                        toast('Enter at least 5 characters',0)
-                        return;
-                    }
-                    //TODO Can it search?
+                    searchIt()
                 }} strip={search.length < 5} />
             </div>
         </div>
@@ -198,7 +196,7 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
             flexWrap:'wrap',
             alignItems:'center'
         }}>
-            <Tab1 title="Total Commission" value={stat?stat.getTotalCommissionsAmt():'...'} color={mye.mycol.hs_blue} />
+            <Tab1 icon={MessageOutlined} title="Total Messages" value={stat?stat.getTotalMessages():'...'} color={mye.mycol.hs_blue} />
         </div>
         <Mgin top={20} />
         <LrText wrap={!dimen.dsk}
@@ -218,7 +216,7 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 flex:1
             }}>
                 <Btn txt="Close Search" round onClick={()=>{
-                    setShowSearch(false)
+                    getThreads(0)
                 }}  width={120}/>
             </div>
         </div>:<div style={{
@@ -226,8 +224,8 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
             display:'flex'
         }}></div>}
         right={<div className="flexi">
-            <IconBtn icon={CloudDownloadOutlined} mye={mye} text="Download CSV" ocl={()=>{
-
+            <IconBtn icon={AddOutlined} mye={mye} text="New Message" ocl={()=>{
+                setShowPicker(true)
             }} width={140} />
         </div>}
         />
@@ -242,12 +240,12 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
             <div className="hlc" style={{
                 alignSelf:'flex-start'
             }}>
-                <SavingsOutlined style={{
+                <MessageOutlined style={{
                     color:mye.mycol.secondarycol,
                     fontSize:20
                 }} />
                 <Mgin right={10}/>
-                <mye.HTv text={'Payments'} size={16} color={mye.mycol.secondarycol} />
+                <mye.HTv text={'Messages'} size={16} color={mye.mycol.secondarycol} />
             </div>
             <Mgin top={20} />
             <div className="hlc" style={{
@@ -259,23 +257,20 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                     paddingBottom:optToShow!=-1?150:0,
                 }}>
                     <div className="hlc">
+                        <MyCell text="Chat"  isBold/>
+                        <MyCell text="Message"  isBold  special/>
                         <MyCell text="Date"  isBold/>
-                        <MyCell text="School ID"  isBold/>
-                        <MyCell text="Payment ID"  isBold/>
-                        <MyCell text="Commission"  isBold/>
                         <MyCell text="Action"  isBold/>
                     </div>
                     {
-                        pays.slice((showingIndex*20),(showingIndex*20+20)).map((ele,index)=>{
-                            return <div className="hlc" key={myKey+index+showingIndex*20}>
-                                <MyCell text={ele.getTime()} />
-                                <MyCell text={ele.getSchoolId()} ocl={()=>{
-                                    //TODO show school name
-                                }} />
-                                <MyCell text={`N${ele.getAmt()}`} />
-                                <MyCell text={ele.getRefId()} />
-                                <MyCell text={ele.getAmt()} />
-                                <Opts index={index} pay={ele} />
+                        threads.slice((showingIndex*20),(showingIndex*20+20)).map((ele,index)=>{
+                            return <div id="clk" className="hlc" key={myKey+index+showingIndex*20} onClick={()=>{
+                                mainprop.actiony(ele,1)
+                            }}>
+                                <MyCell text={ele.amFrom()?ele.getToName():ele.getFromName()} />
+                                <MyCell text={ele.getLastMsg()} special />
+                                <MyCell text={ele.getLastUpdated()} />
+                                <Opts index={index} thread={ele} />
                             </div>
                         })
                     }
@@ -286,19 +281,19 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 <ArrowBack id="clk" className="icon" onClick={()=>{
                     if(showingIndex >0){
                         const index = showingIndex-1
-                        getThePays(index)
+                        getThreads(index)
                     }
                 }} />
                 <Mgin right={10} />
                 {
-                    Array.from({length:Math.floor((stat?stat.getTotalComs():0)/20)+1},(_,index)=>{
+                    Array.from({length:Math.floor((stat?stat.getTotalMessages():0)/20)+1},(_,index)=>{
                         return <div id="clk" key={myKey+index+10000} className="ctr" style={{
                             width:25,
                             height:25,
                             backgroundColor:showingIndex==index?mye.mycol.black:'transparent',
                             borderRadius:'50%'
                         }} onClick={()=>{
-                            getThePays(index)
+                            getThreads(index)
                         }}>
                             <mye.BTv text={(index+1).toString()} color={showingIndex==index?mye.mycol.white:mye.mycol.black} size={16}/>
                         </div>
@@ -306,12 +301,12 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 }
                 <Mgin right={10} />
                 <ArrowForward id="clk" className="icon" onClick={()=>{
-                    const len = Math.floor((stat?stat.getTotalComs():0)/20)
+                    const len = Math.floor((stat?stat.getTotalMessages():0)/20)
                     console.log(len)
                     console.log(showingIndex)
                     if(showingIndex < len){
                         const index = showingIndex+1
-                        getThePays(index)
+                        getThreads(index)
                     }
                 }} />
             </div>
@@ -319,7 +314,7 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
         <PoweredBySSS />
         {/* Absolutely positioned (dialog) */}
         <div className="ctr" style={{
-            display:showReceipt?undefined:'none',
+            display:showPicker?undefined:'none',
             position:'absolute',
             top:0,
             left:0,
@@ -329,77 +324,59 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
             backgroundColor:'rgba(0,0,0,0.1)',
             padding: dimen.dsk?'10% 25%':0
         }}>
-            {cpay?<PayReciept ele={cpay} />:<div></div>}
+            <PickMsgReceiver closy={()=>{
+                setShowPicker(false)
+            }} rdy={(name,id,email, subject)=>{
+                setLoad(true)
+                makeRequest.post('createMsgThread',{
+                    from: mainprop.sbi.getSchoolName(),
+                    from_uid: mainprop.sbi.getSchoolID(),
+                    to: name,
+                    to_uid: id,
+                    last_msg:'New Message',
+                    subject: subject,
+                    from_mail: mainprop.sbi.getEmail(),
+                    to_mail:email
+                },(task)=>{
+                    setLoad(false)
+                    if(task.isSuccessful()){
+                        const thread = new msgThread(task.getData())
+                        mainprop.actiony(thread,1)
+                    }else{
+                        toast(task.getErrorMsg(),0)
+                    }
+                })
+            }} />
         </div>
     </div>
 
-    function PayReciept(prop:{ele:partnerComEle}) {
-        return <div className="vlc" style={{
-            width:'100%',
-            height:'100%',
-            backgroundColor:mye.mycol.bkg,
-            borderRadius:10,
-            padding:20
-        }}>
-            <div id="clk" style={{
-                    alignSelf:'flex-end'
-                }} onClick={()=>{
-                    setShowReceipt(false)
-                }}>
-                    <Close className="icon" />
-                </div>
-                <div className="ctr" style={{
-                    flex:1
-                }}>
-                    <div className="vlc" id="lshdw" style={{
-                        width:265,
-                        padding:20,
-                        boxSizing:'border-box',
-                        borderRadius:10,
-                    }}>
-                        <mye.Tv text="PAYMENT RECEIPT" size={12} color={mye.mycol.primarycol} />
-                        <Mgin top={15} />
-                        <Line broken/>
-                        <Mgin top={20} />
-                        <LrText
-                        left={<mye.Tv text="Date/Time:" size={12} />}
-                        right={<mye.Tv text={prop.ele.getTime()} size={12} />}
-                        />
-                        <Mgin top={7} />
-                        <LrText
-                        left={<mye.Tv text="School ID" size={12} />}
-                        right={<mye.Tv text={prop.ele.getSchoolId()} size={12} />}
-                        />
-                        <Mgin top={7} />
-                        <LrText
-                        left={<mye.Tv text="Receipt Id:" size={12} />}
-                        right={<mye.Tv text={prop.ele.getRefId()} size={12} />}
-                        />
-                        <Mgin top={7} />
-                        <Line broken/>
-                        <Mgin top={7} />
-                        <LrText
-                        left={<mye.Tv text="Amount" size={12} />}
-                        right={<mye.Tv text={`NGN ${prop.ele.getAmt()}`} size={12} />}
-                        />
-                        <Mgin top={7} />
-                        <Line broken/>
-                        <Mgin top={7} />
-                        <LrText
-                        left={<mye.Tv text="Visa Debit" size={12} />}
-                        right={<mye.Tv text={`**** **** **** ****`} size={12} />}
-                        />
-                        <Mgin top={20} />
-                        <mye.HTv text="Transaction Approved" size={12} />
-                        <Mgin top={20} />
-                        <Barcode value={prop.ele.getRefId()} height={30} displayValue={false} />
-                        <Mgin top={10} />
-                    </div>
-                </div>
-            </div>
+    function searchIt() {
+        const sc = search.trim()
+        if(sc.length < 5){
+            toast('Enter at least 5 characters',0)
+            return;
+        }
+        setLoad(true)
+        makeRequest.get('searchMsgThread',{search:search},(task)=>{
+            setLoad(false)
+            if(task.isSuccessful()){
+                console.log(task.getData())
+                const tem:msgThread[] = []
+                for(const key in task.getData()){
+                    const thread = new msgThread(task.getData()[key])
+                    tem.push(thread)
+                }
+                setThreads(tem)
+                setShowSearch(true)
+            }else{
+                toast('No Result',0)
+            }
+        })
     }
 
-    function Opts(prop:{index:number,pay:partnerComEle}) {
+    
+
+    function Opts(prop:{index:number,thread:msgThread}) {
         return <div className="ctr" style={{
             flex:(dimen.dsk2)?1:undefined,
             width:(dimen.dsk2)?undefined:100,
@@ -432,9 +409,8 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 }} onClick={()=>{
                     setOptToShow(-1)
                 }} />
-                <MyCell text="Receipt" ocl={()=>{
-                    setCPay(prop.pay)
-                    setShowReceipt(true)
+                <MyCell text="View" ocl={()=>{
+                    mainprop.actiony(prop.thread,1)
                 }} alignStart special />
             </div>
         </div>
@@ -454,7 +430,7 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
                 prop.ocl()
             }
         }}>
-            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={prop.tCol||mye.mycol.imghint} hideOverflow />}
+            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} maxLines={2} size={14} color={prop.tCol||mye.mycol.imghint} hideOverflow />}
         </div>
     }
 
@@ -524,3 +500,200 @@ export function PartnerPaymentList(mainprop:{ backy:()=>void}){
 
 }
 
+function PickMsgReceiver(prop:{closy:()=>void, rdy:(name:string,id:string,email:string,subject:string)=>void} ) {
+    const mye = new myEles(false)
+    const myKey = Date.now()
+    const[search, setSearch] = useState('')
+    const[subject, setSubject] = useState('')
+    const[isSchool,setIsSchool] = useState(true)
+    const[schools,setSchools] = useState<schoolBasicinfo[]>([])
+    const[partners,setPartners] = useState<partnerBasicinfo[]>([])
+
+
+
+    const[load, setLoad]=useState(false)
+    const[loadMsg, setLoadMsg]=useState('Just a sec')
+    const[error, setError]=useState(false)
+    const[toastMeta, setToastMeta] = useState({visible: false,msg: "",action:2,invoked:0})
+    const[timy, setTimy] = useState<{timer?:NodeJS.Timeout}>({timer:undefined});
+    function toast(msg:string, action:number,delay?:number){
+    var _delay = delay || 5000
+    setToastMeta({
+        action: action,
+        msg: msg,
+        visible:true,
+        invoked: Date.now()
+    })
+    clearTimeout(timy.timer)
+    setTimy({
+        timer:setTimeout(()=>{
+            if(Date.now()-toastMeta.invoked > 4000){
+                setToastMeta({
+                    action:2,
+                    msg:"",
+                    visible:false,
+                    invoked: 0
+                })
+            }
+        },_delay)
+    });
+    }
+
+    return <div style={{
+        width:'100%',
+        height:'100%',
+        backgroundColor:mye.mycol.bkg,
+        borderRadius:10,
+        padding:20,
+        display:'flex',
+        flexDirection:'column'
+    }}>
+        <ErrorCont isNgt={false} visible={error} retry={()=>{
+            setError(false)
+        }}/>
+        <div className="prgcont" style={{display:load?"flex":"none"}}>
+            <div className="hlc" style={{
+                backgroundColor:mye.mycol.bkg,
+                borderRadius:10,
+                padding:20,
+            }}>
+                <CircularProgress style={{color:mye.mycol.primarycol}}/>
+                <Mgin right={20} />
+                <mye.Tv text={loadMsg} />
+            </div>
+        </div>
+        <Toast isNgt={false} msg= {toastMeta.msg} action={toastMeta.action} visible={toastMeta.visible} canc={()=>{
+                setToastMeta({
+                    action:2,
+                    msg:"",
+                    visible:false,
+                    invoked:0,
+                })
+            }} />
+        <div className="vlc">
+            <div id="clk" style={{
+                alignSelf:'flex-end'
+            }} onClick={()=>{
+                prop.closy()
+            }}>
+                <Close className="icon" />
+            </div>
+        </div>
+        <mye.Tv text="Who To Message" size={14} />
+        <Mgin top={10} />
+        <div className="hlc">
+            <Btn txt="School" width={120} onClick={()=>{
+                setIsSchool(true)
+            }} strip={!isSchool}/>
+            <Mgin right={10} />
+            <Btn txt="Partner" width={120} onClick={()=>{
+                setIsSchool(false)
+            }} strip={isSchool}/>
+        </div>
+        <Mgin top={10} />
+        <mye.Tv text="Message Subject" size={14} />
+        <Mgin top={10} />
+        <EditTextFilled hint="Message Subject" value={subject} min={3} recv={(v)=>{
+            setSubject(v)
+        }} />
+        <Mgin top={10} />
+        <mye.Tv text="Search" size={14} />
+        <Mgin top={10} />
+        <div className="hlc" style={{
+            width:'100%'
+        }}>
+           <div style={{
+             flex:1
+           }}>
+             <EditTextFilled hint={`Search ${isSchool?'School':'Partner'} by name`} value={search} min={5} recv={(v)=>{
+                    setSearch(v)
+                }} />
+           </div>
+            <Mgin right={10}/>
+            <Btn txt="Search" width={100} onClick={()=>{
+                if(subject.length < 3){
+                    toast('Please add message subject first',0)
+                    return
+                }
+                const sc = search.trim()
+                if(sc.length < 5){
+                    toast('Enter at least 5 characters',0)
+                    return;
+                }
+                setLoad(true)
+                makeRequest.get(isSchool?'searchSchools':'searchPartners',{
+                    search:search
+                },(task)=>{
+                    setLoad(false)
+                    if(task.isSuccessful()){
+                        if(isSchool){
+                            const tem:schoolBasicinfo[] = []
+                            for(const key in task.getData()){
+                                tem.push(new schoolBasicinfo(task.getData()[key]['b']))
+                            }
+                            setSchools(tem)
+                        }else{
+                            const tem:partnerBasicinfo[] = []
+                            for(const key in task.getData()){
+                                tem.push(new partnerBasicinfo(task.getData()[key]['b']))
+                            }
+                            setPartners(tem)
+                        }
+                    }else{
+                        toast(task.getErrorMsg(),0)
+                    }
+                })
+            }} strip={search.length < 5} />
+        </div>
+        <Mgin top={20}/>
+        <mye.Tv text={`Choose ${isSchool?'School':'Partner'}`} size={14} />
+        <Mgin top={10}/>
+        <div style={{
+            width:'100%',
+            flex:1,
+        }}>
+            {
+                (schools.length==0 && partners.length==0)?<div style={{
+                    width:'100%',
+                    height:'100%',
+                    backgroundColor:mye.mycol.btnstrip5
+                }} className="ctr">
+                    <mye.Tv text="Search Result Will Show Here" size={12} color={mye.mycol.hint}/>
+                </div>:
+                isSchool?schools.map((ele,i)=>{
+                    return <div id="clk" key={myKey+i+0.121} onClick={()=>{
+                        prop.rdy(ele.getSchoolName(),ele.getSchoolID(),ele.getEmail(),subject)
+                    }} style={{
+                        width:'100%',
+                        marginBottom:10,
+                        backgroundColor: mye.mycol.imghintr2,
+                        borderRadius:5,
+                        boxSizing:'border-box',
+                        padding:10
+                    }}>
+                        <LrText 
+                        left={<mye.BTv text={ele.getSchoolName()} size={14} />}
+                        right={<ArrowRight className="icon" />}
+                        />
+                    </div>
+                }):partners.map((ele,i)=>{
+                    return <div id="clk" key={myKey+i+0.121} onClick={()=>{
+                        prop.rdy(ele.getFirstName(),ele.getPartnerID(),ele.getEmail(),subject)
+                    }} style={{
+                        width:'100%',
+                        marginBottom:10,
+                        backgroundColor: mye.mycol.imghintr2,
+                        borderRadius:5,
+                        boxSizing:'border-box',
+                        padding:10
+                    }}>
+                        <LrText 
+                        left={<mye.BTv text={ele.getFirstName()+' '+ele.getLastName()} size={14} />}
+                        right={<ArrowRight className="icon" />}
+                        />
+                    </div>
+                })
+            }
+        </div>
+    </div>
+}

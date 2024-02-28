@@ -33,7 +33,7 @@ export function AdminPaymenysList(mainprop:{actiony:(action:number,user?:schoolB
         setLoad(false)
         setError(!noHarm)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -236,16 +236,16 @@ export function AdminPaymenysList(mainprop:{actiony:(action:number,user?:schoolB
                 flex:1
             }}>
                 <Btn txt="Not Paid" round onClick={()=>{
-                    getSchools(0, true)
-                }} transparent={!showPaid} />
+                    getSchools(0, false)
+                }} transparent={showPaid} />
             </div>
             <Mgin right={10} />
             <div style={{
                 flex:1
             }}>
                 <Btn txt="Paid" round onClick={()=>{
-                    getSchools(0, false)
-                }} transparent={showPaid}/>
+                    getSchools(0, true)
+                }} transparent={!showPaid}/>
             </div>
         </div>}
         right={<div className="flexi">
@@ -437,7 +437,7 @@ export function AdminPaymenysList(mainprop:{actiony:(action:number,user?:schoolB
                 prop.ocl()
             }
         }}>
-            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} />}
+            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} hideOverflow />}
         </div>
     }
 

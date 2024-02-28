@@ -52,7 +52,7 @@ export function AdminDirViewSchool(mainprop:{school:schoolBasicinfo,backy:(actio
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -102,7 +102,7 @@ export function AdminDirViewSchool(mainprop:{school:schoolBasicinfo,backy:(actio
                             email: mainprop.school.getEmail(),
                             subject: "SCHOOLSILO Account Verified",
                             body: `Your SCHOOLSILO account has been verified. You can now use the portal at:`,
-                            link: 'https://portal.schoolsilo.cloud/schooldash'
+                            link: 'https://portal.schoolsilo.cloud/schoolLogin'
                         },(task)=>{
                             setLoad(false)
                             if(task.isSuccessful()){
@@ -246,7 +246,8 @@ export function AdminDirViewSchool(mainprop:{school:schoolBasicinfo,backy:(actio
                 width:120,
                 height:120,
                 backgroundColor:mye.mycol.btnstrip,
-                borderRadius:100
+                borderRadius:100,
+                alignSelf:'flex-start'
             }}  />
             <Mgin top={10} />
             <div style={{
@@ -306,42 +307,8 @@ export function AdminDirViewSchool(mainprop:{school:schoolBasicinfo,backy:(actio
             </div>
 
         </div>
-        {(!mainprop.isMemAccess && mainprop.me?.getRole()=='0')?<div id="lshdw" className="vlc" style={{
-            backgroundColor:mye.mycol.white,
-            borderRadius:10,
-            marginTop:20,
-            boxSizing:'border-box',
-            padding:dimen.dsk?20:10,
-            alignItems:'flex-start'
-        }}>
-            <mye.HTv text="Reset Password" size={20} />
-            <Mgin top={10}/>
-            <mye.Tv text="As super-admin, you can change a member's password." />
-            <Mgin top={20}/>
-            <div style={{
-                width: dimen.dsk?300:'100%'
-            }}>
-                <EditTextFilled key={newPwdKey} pwd hint="New Password" noSpace value={newPwd} finise={(v)=>{
-                    setNewPassword()
-                }} recv={(v)=>{
-                    setNewPwd(v.trim())
-                }} />
-                <Mgin top={10} />
-                <Btn txt="SET NEW PASSWORD" onClick={()=>{
-                    setNewPassword()
-                }} />
-            </div>
-        </div>:<div></div>}
         <PoweredBySSS floaatIt />
     </div>
-
-    function setNewPassword() {
-        if(newPwd.length<6){
-            toast('Password too short',0)
-            return
-        }
-        toast('In Dev',2)
-    }
 
     function InfoLay(prop:{sub:string, main:string}) {
         return <div style={{
@@ -400,7 +367,7 @@ export function AdminDirViewPartner(mainprop:{partner:partnerBasicinfo,backy:(ac
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -450,7 +417,7 @@ export function AdminDirViewPartner(mainprop:{partner:partnerBasicinfo,backy:(ac
                             email: mainprop.partner.getEmail(),
                             subject: "SCHOOLSILO Account Verified",
                             body: `Your SCHOOLSILO account has been verified. You can now use the portal at:`,
-                            link: 'https://portal.schoolsilo.cloud/partnerdash'
+                            link: 'https://portal.schoolsilo.cloud/partnerLogin'
                         },(task)=>{
                             setLoad(false)
                             if(task.isSuccessful()){
@@ -647,42 +614,9 @@ export function AdminDirViewPartner(mainprop:{partner:partnerBasicinfo,backy:(ac
             </div>
 
         </div>
-        {(!mainprop.isMemAccess && mainprop.me?.getRole()=='0')?<div id="lshdw" className="vlc" style={{
-            backgroundColor:mye.mycol.white,
-            borderRadius:10,
-            marginTop:20,
-            boxSizing:'border-box',
-            padding:dimen.dsk?20:10,
-            alignItems:'flex-start'
-        }}>
-            <mye.HTv text="Reset Password" size={20} />
-            <Mgin top={10}/>
-            <mye.Tv text="As super-admin, you can change a member's password." />
-            <Mgin top={20}/>
-            <div style={{
-                width: dimen.dsk?300:'100%'
-            }}>
-                <EditTextFilled key={newPwdKey} pwd hint="New Password" noSpace value={newPwd} finise={(v)=>{
-                    setNewPassword()
-                }} recv={(v)=>{
-                    setNewPwd(v.trim())
-                }} />
-                <Mgin top={10} />
-                <Btn txt="SET NEW PASSWORD" onClick={()=>{
-                    setNewPassword()
-                }} />
-            </div>
-        </div>:<div></div>}
         <PoweredBySSS floaatIt />
     </div>
 
-    function setNewPassword() {
-        if(newPwd.length<6){
-            toast('Password too short',0)
-            return
-        }
-        toast('in dev',2)
-    }
 
     function InfoLay(prop:{sub:string, main:string}) {
         return <div style={{

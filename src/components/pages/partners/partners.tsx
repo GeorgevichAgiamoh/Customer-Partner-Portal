@@ -12,6 +12,7 @@ import { partnerBasicinfo, partnerFinancialinfo, partnerGeneralinfo } from "../.
 import { PartnerNav } from "../nav";
 import { PartnerCustomers } from "./customers/customers";
 import { PartnerProfile } from "./partnerprofile";
+import { PartnerMessages } from "./messages/messages";
 
 
 export function Partners(){
@@ -266,7 +267,7 @@ export function Partners(){
                     backgroundColor:'rgba(0,0,0,0.02)'
                 }}>
                     {(pbi && pbi.isDeleted())?<ShowProfileDeleted />:(pbi && !pbi!.isVerified() && tabPos!=4)?<AskToVerif />:pbi?tabPos===0?<PartnerDashboard pbi={pbi} pgi={pgi}
-                     />:tabPos==1?<PartnerCustomers pbi={pbi} />:tabPos==2?<PartnerPayments />:tabPos==3?<MsgTBD />:tabPos==4?<PartnerProfile goto={(a)=>{
+                     />:tabPos==1?<PartnerCustomers pbi={pbi} />:tabPos==2?<PartnerPayments />:tabPos==3?<PartnerMessages pbi={pbi} />:tabPos==4?<PartnerProfile goto={(a)=>{
                         if(a==0){
                             getPartnerInfo()
                         }

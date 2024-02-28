@@ -34,7 +34,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
         setLoad(false)
         setError(!noHarm)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -167,9 +167,9 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
             flexWrap:'wrap',
             alignItems:'center'
         }}>
-            <Tab1 icon={PersonOutline} title="Verified Members" value={vStats?isSchool?vStats.getSchoolVerif():vStats.getPartnersVerif:'...'} color={mye.mycol.primarycol} />
-            <Tab1 icon={PersonOutline} title="Unverified Members" value={vStats?isSchool?vStats.getSchoolsNotVerif():vStats.getPartnersNotVerif:'...'} color={mye.mycol.primarycol} />
-            <Tab1 icon={PersonOutline} title="Deleted Members" value={vStats?isSchool?vStats.getSchoolsDeleted():vStats.getPartnersDeleted:'...'} color={mye.mycol.red} />
+            <Tab1 icon={PersonOutline} title="Verified Members" value={vStats?isSchool?vStats.getSchoolVerif():vStats.getPartnersVerif():'...'} color={mye.mycol.primarycol} />
+            <Tab1 icon={PersonOutline} title="Unverified Members" value={vStats?isSchool?vStats.getSchoolsNotVerif():vStats.getPartnersNotVerif():'...'} color={mye.mycol.primarycol} />
+            <Tab1 icon={PersonOutline} title="Deleted Members" value={vStats?isSchool?vStats.getSchoolsDeleted():vStats.getPartnersDeleted():'...'} color={mye.mycol.red} />
         </div>
         <Mgin top={20} />
         <div style={{
@@ -255,7 +255,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                 flex:1
             }}>
                 <Btn txt="Schools" round onClick={()=>{
-                    getUsers(1,0, true)
+                    getUsers(vpos,0, true)
                 }} transparent={!isSchool} />
             </div>
             <Mgin right={10} />
@@ -263,7 +263,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                 flex:1
             }}>
                 <Btn txt="Partners" round onClick={()=>{
-                    getUsers(0,0, false)
+                    getUsers(vpos,0, false)
                 }} transparent={isSchool}/>
             </div>
         </div>
@@ -548,7 +548,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                                                 email: prop.school!.getEmail(),
                                                 subject: "SCHOOLSILO Account Verified",
                                                 body: `Your SCHOOLSILO account has been verified. You can now use the portal at:`,
-                                                link: 'https://portal.schoolsilo.cloud/schooldash'
+                                                link: 'https://portal.schoolsilo.cloud/schoolLogin'
                                             },(task)=>{
                                                 setLoad(false)
                                                 if(task.isSuccessful()){
@@ -592,7 +592,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                                                 email: prop.partner!.getEmail(),
                                                 subject: "SCHOOLSILO Account Verified",
                                                 body: `Your SCHOOLSILO account has been verified. You can now use the portal at:`,
-                                                link: 'https://portal.schoolsilo.cloud/partnerdash'
+                                                link: 'https://portal.schoolsilo.cloud/partnerLogin'
                                             },(task)=>{
                                                 setLoad(false)
                                                 if(task.isSuccessful()){
@@ -682,7 +682,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                 prop.ocl()
             }
         }}>
-            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} />}
+            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} hideOverflow />}
         </div>
     }
 

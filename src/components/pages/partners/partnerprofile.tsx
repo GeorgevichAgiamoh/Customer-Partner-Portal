@@ -411,7 +411,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
                     fname:fname,
                     lname:lname,
                     mname:mname,
-                    email:eml,
+                    eml:eml,
                     phn:phn,
                     verif:'0'
                 },(task)=>{

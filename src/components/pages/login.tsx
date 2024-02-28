@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import Toast from "../toast/toast";
 import axios from "axios";
-import {  makeRequest, saveUserId } from "../../helper/requesthandler";
+import {  makeRequest, saveUserEml, saveUserId } from "../../helper/requesthandler";
 import { schoolBasicinfo } from "../classes/models";
 
 
@@ -529,6 +529,7 @@ export function MailLogin(mainprop:{acctType:number}){
             if(task.isSuccessful()){
                 const uid = task.getData()['id']
                 saveUserId(uid)
+                saveUserEml(eml)
                  if(mainprop.acctType == 0){
                     //Check if user has paid
                     makeRequest.get(`getSchoolBasicInfo/${uid}`,{},(task)=>{

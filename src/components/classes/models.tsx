@@ -2,6 +2,7 @@ import { format } from "date-fns"
 import { mCountry, mLga, mState } from "monagree-locs"
 import {  myEles, spin_genders, spin_marital, spin_nok } from "../../helper/general"
 import { mBanks } from "monagree-banks"
+import { endpoint, getUserId } from "../../helper/requesthandler"
 
 
 
@@ -380,10 +381,120 @@ export class payStat{
     }
 }
 
+
+
+export class msgStat{
+    data:any
+    constructor(data:any){
+        this.data = data
+    }
+    getTotalMessages(){
+        return this.data['totalMessages']
+    }
+}
+
+
+
+export class msgThread{
+    data:any
+    constructor(data:any){
+        this.data = data
+    }
+    
+    getThreadId(){
+        return this.data['id']
+    }
+    getFromName(){
+        return this.data['from']
+    }
+    getToName(){
+        return this.data['to']
+    }
+    getFromMail(){
+        return this.data['from_mail']
+    }
+    getToMail(){
+        return this.data['to_mail']
+    }
+    getFromId(){
+        return this.data['from_uid']
+    }
+    getToId(){
+        return this.data['to_uid']
+    }
+    getLastMsg(){
+        return this.data['last_msg']
+    }
+    getSubject(){
+        return this.data['subject']
+    }
+
+    //--CUSTOM
+    amFrom(){
+        return this.data['from_uid'] == getUserId()
+    }
+    getLastUpdated(){
+        return getUpdatedTime(this.data)
+    }
+    getNameById(id:string){
+        if(id == this.getFromId()){
+            return this.getFromName()
+        }
+        return this.getToName()
+    }
+}
+
+
+
+export class msgEle{
+    data:any
+    constructor(data:any){
+        this.data = data
+    }
+    getThreadId(){
+        return this.data['tid']
+    }
+    getBody(){
+        return this.data['body']
+    }
+    getWho(){
+        return this.data['who']
+    }
+    getArt(){
+        return this.data['art']
+    }
+
+    //-- CUSTOM
+    getArtUrl(){
+        return `${endpoint}/getFile/msg/${this.getArt()}`
+    }
+    isArtImage(){
+        return (this.data['art'] as string).startsWith('img')
+    }
+    hasArt(){
+        return this.data['art'] != '_'
+    }
+    isMe(){
+        return this.data['who'] == getUserId()
+    }
+    getTime(){
+        return getCreatedTime(this.data)
+    }
+}
+
+
 //--------------------------------------------------------------------------------------------------------
 
 export function getCreatedTime(data:any,includeTime?:boolean){
     const ct = data['created_at'] as string
+    const createdAtDate = new Date(ct);
+    const formattedDate = format(createdAtDate, 'dd/MM/yy');
+    const formattedTime = format(createdAtDate, 'HH:mm:ss');
+    return includeTime?formattedDate+' '+formattedTime:formattedDate
+}
+
+export function getUpdatedTime(data:any,includeTime?:boolean){
+    const ct = data['updated_at'] as string
     const createdAtDate = new Date(ct);
     const formattedDate = format(createdAtDate, 'dd/MM/yy');
     const formattedTime = format(createdAtDate, 'HH:mm:ss');
@@ -513,9 +624,6 @@ export class adminUserEle{
     constructor(data:any){
         this.data = data
     }
-    getUserId(){
-        return this.data['user_id'].toString()
-    }
     getLastName(){
         return this.data['lname']
     }
@@ -568,5 +676,7 @@ export class fileEle{
         return this.data['folder']
     }
 }
+
+//---------------------------------------------------------------
 
 

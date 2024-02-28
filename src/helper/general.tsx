@@ -98,7 +98,7 @@ export function CloseBtn(prop:{onClick:()=>void}){
     </div>
 }
 
-export function TextBox(prop:{isNgt:boolean,text:string, size?: number, color?: string,onClick?:()=>void,maxLines?:number, wrapit?:boolean, center?:boolean}){
+export function TextBox(prop:{isNgt:boolean,text:string, size?: number, color?: string,onClick?:()=>void,maxLines?:number, wrapit?:boolean, center?:boolean,hideOverflow?:boolean}){
     var ln = 100;
     if(prop.maxLines){
       ln = prop.maxLines;
@@ -106,7 +106,7 @@ export function TextBox(prop:{isNgt:boolean,text:string, size?: number, color?: 
     return (
         <p className={prop.maxLines?'limitedTV3':undefined} style={{margin:"1px",fontSize: prop.size!==undefined?prop.size:14,color: prop.color||MyCols(prop.isNgt).black,
         cursor:prop.onClick!==undefined?"pointer":"default", maxLines:ln,whiteSpace:prop.wrapit?"normal":"nowrap",textDecoration:prop.onClick!=undefined?'underline':undefined,
-         textAlign:prop.center?"center":"start"}}
+         textAlign:prop.center?"center":"start", overflow: prop.hideOverflow?'hidden':undefined}}
         onClick={prop.onClick}>{prop.text}</p>
     )
 }
@@ -578,8 +578,9 @@ export function fixedString(s:string, numDig:number){
         this.mycol = new myCols(isNgt)
     }
 
-    Tv(prop:{text:string, size?: number, color?: string,onClick?:()=>void,maxLines?:number, wrapit?:boolean, center?:boolean}) {
-        return <TextBox isNgt={false} text={prop.text} size={prop.size} color={prop.color} onClick={prop.onClick} maxLines={prop.maxLines} wrapit={prop.wrapit!==undefined?prop.wrapit:true} center={prop.center} />
+    Tv(prop:{text:string, size?: number, color?: string,onClick?:()=>void,maxLines?:number, wrapit?:boolean, center?:boolean,hideOverflow?:boolean}) {
+        return <TextBox isNgt={false} text={prop.text} size={prop.size} color={prop.color} onClick={prop.onClick} maxLines={prop.maxLines} 
+        wrapit={prop.wrapit!==undefined?prop.wrapit:true} center={prop.center} hideOverflow={prop.hideOverflow} />
     }
 
     BTv(prop:{maxLines?:number,text:string, size: number, color?: string,wrapit?:boolean, center?:boolean,onClick?:()=>void}){
@@ -768,7 +769,8 @@ export function fixedString(s:string, numDig:number){
 
   export const pricePerShare = 10
 
-  export const masterID = '0' //TODO set master ID
+  export const masterID = '5' //TODO set master ID
+  export const masterEmail = 'admin@schoolsilo.cloud' 
 
   export const spin_genders:{[key:string]:string} = {
     'M': 'Male',

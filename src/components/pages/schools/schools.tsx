@@ -10,6 +10,8 @@ import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
 import { SchoolDashboard } from "./dashbrd";
 import { SchoolProfile } from "./schoolprofile";
+import { PaySchoolRegFee } from "../register";
+import { SchoolMessages } from "./messages/messages";
 
 
 export function Schools(){
@@ -242,7 +244,9 @@ export function Schools(){
                     {sbi?tabPos===0?<SchoolDashboard goto={(a)=>{
                         setTabPos(a)
                         setMyKey(Date.now())
-                    }}  sbi={sbi!} sgi={sgi}/>:tabPos===3?<SchoolProfile goto={(a)=>{
+                    }}  sbi={sbi!} sgi={sgi}/>:tabPos===1?<PaySchoolRegFee sbi={sbi!}/>:
+                    tabPos===2?<SchoolMessages sbi={sbi!}/>:
+                    tabPos===3?<SchoolProfile goto={(a)=>{
                         setTabPos(a)
                         setMyKey(Date.now())
                     }}  />:LoadLay():LoadLay()}

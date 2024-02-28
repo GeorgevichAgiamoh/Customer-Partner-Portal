@@ -73,15 +73,25 @@ function MainPage(){
   const mye = new myEles(false)
 
 
-  return <div>
+  return <div className='vlc' style={{
+    boxSizing:'border-box',
+    padding:20,
+    width:'100vw',
+    height:'100vh',
+    justifyContent:'center'
+  }}>
     <mye.HTv text='What portal do you want to visit' />
-    <Mgin top={10}/>
-    <Btn txt='Partner Portal' width={140} strip onClick={()=>{
+    <Mgin top={30}/>
+    <Btn txt='Partner Portal' width={200} strip onClick={()=>{
       navigate('/partnerLogin')
     }} />
     <Mgin top={20}/>
-    <Btn txt='School Portal' width={140} strip onClick={()=>{
+    <Btn txt='School Portal' width={200} strip onClick={()=>{
       navigate('/schoolLogin')
+    }} />
+    <Mgin top={20}/>
+    <Btn txt='Admin Portal' width={200} strip onClick={()=>{
+      navigate('/adminLogin')
     }} />
     <Mgin top={10}/>
   </div>

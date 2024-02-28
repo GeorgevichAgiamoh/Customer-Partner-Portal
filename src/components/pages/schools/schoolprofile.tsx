@@ -126,7 +126,7 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                 setError(true)
             }
         })
-        makeRequest.get(`fileExists/schoollogo/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`fileExists/dp/${getUserId()}`,{},(task)=>{
             if(task.isSuccessful()){
                 setFileExists(true)
             }
@@ -531,7 +531,7 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                 makeRequest.post('setSchoolBasicInfo',{
                     user_id:getUserId(),
                     sname:sname,
-                    email:eml,
+                    eml:eml,
                     phn:phn,
                     verif:'0',
                     pcode: pcode,
@@ -576,7 +576,7 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                                     return
                                 }
                                 toast('Almost there...',2)
-                                makeRequest.uploadFile('schoollogo',getUserId(),getUserId(),logo!, (task)=>{
+                                makeRequest.uploadFile('dp',getUserId(),getUserId(),logo!, (task)=>{
                                     if(task.isSuccessful()){
                                         finFinish()
                                     }else{

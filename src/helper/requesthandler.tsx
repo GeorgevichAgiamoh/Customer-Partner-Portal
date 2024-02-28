@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios"
 
 
 
-export const endpoint = 'https://api.schoolsilo.cloud/api'//http://127.0.0.1:8000/api
+export const endpoint = 'http://127.0.0.1:8000/api'//https://api.schoolsilo.cloud/api
 
 export function getACT(){
     return localStorage.getItem('schoolsilo_act') ?? ''
@@ -105,4 +105,14 @@ export class resHandler{
   export function getUserId(){
     let muid =  localStorage.getItem('muid') ?? ''
     return muid
+  }
+
+  
+  export function saveUserEml(meml:string){
+    localStorage.setItem('meml',meml)
+  }
+
+  export function getUserEml(){
+    let meml =  localStorage.getItem('meml') ?? ''
+    return meml
   }

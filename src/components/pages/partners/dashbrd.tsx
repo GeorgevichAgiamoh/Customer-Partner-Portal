@@ -33,7 +33,7 @@ export function PartnerDashboard(mainprop:{pbi:partnerBasicinfo,pgi?:partnerGene
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }

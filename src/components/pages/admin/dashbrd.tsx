@@ -1,7 +1,7 @@
 import { PersonOutline, SavingsOutlined, VolumeUpOutlined, ArrowRightOutlined, Close, AttachFile, Mail, BusinessOutlined } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import useWindowDimensions from "../../../helper/dimension";
-import { myEles, setTitle, appName, Mgin, LrText, BtnIcn, icony, IconBtn, ErrorCont, MyPieChart, hexToRgba, masterID, goUrl,CopyMan } from "../../../helper/general";
+import { myEles, setTitle, appName, Mgin, LrText, BtnIcn, icony, IconBtn, ErrorCont, MyPieChart, hexToRgba, masterID, goUrl,CopyMan, masterEmail } from "../../../helper/general";
 import { CircularProgress } from "@mui/material";
 import Toast from "../../toast/toast";
 import { getUserId, makeRequest, resHandler } from "../../../helper/requesthandler";
@@ -175,9 +175,9 @@ export function AdminDashboard(mainprop:{me:adminUserEle}){
                 <ArrowRightOutlined className="icon" />
              </div>}
              right={<div id="clk" style={{
-                display:mainprop.me.getUserId()!= masterID?'none':undefined
+                display:mainprop.me.getEmail()!= masterEmail?'none':undefined
              }} className="hlc" onClick={()=>{
-                if(mainprop.me.getUserId()!= masterID){
+                if(mainprop.me.getEmail()!= masterEmail){
                     toast('Only super admins can make announcement',0)
                     return
                 }

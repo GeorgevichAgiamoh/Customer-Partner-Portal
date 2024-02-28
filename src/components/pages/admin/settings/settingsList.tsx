@@ -1,7 +1,7 @@
 import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, UploadOutlined, AccountBalance, PeopleOutline } from "@mui/icons-material"
 import { useState, useEffect, useRef } from "react"
 import useWindowDimensions from "../../../../helper/dimension"
-import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, EditTextFilled, MyCB, ErrorCont, isEmlValid, masterID, isDigit } from "../../../../helper/general"
+import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, EditTextFilled, MyCB, ErrorCont, isEmlValid, masterID, isDigit, masterEmail } from "../../../../helper/general"
 import { mLoc } from "monagree-locs/dist/classes"
 import { mCountry, mLga, mState } from "monagree-locs"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -23,7 +23,7 @@ export function SettingsList(){
     const[cuser, setCUser] = useState<adminUserEle>()
     const[showStage, setShowStage] = useState(0)
     const[optToShow,setOptToShow] = useState(-1)
-    //Cooperative Info
+    //Company Info
     const[name,setName] = useState('')
     const[regNo,setRegNo] = useState('')
     const[logo,setLogo] = useState<File>()
@@ -42,7 +42,6 @@ export function SettingsList(){
     const[oname,setOname] = useState('')
     const[lname,setLname] = useState('')
     const[eml,setEml] = useState('')
-    const[sid,setSid] = useState('')
     const[role,setRole] = useState('')
     const[users, setUsers] = useState<adminUserEle[]>([])
 
@@ -97,7 +96,7 @@ export function SettingsList(){
                 setMyKey(Date.now())
             }else{
                 if(task.isLoggedOut()){
-                    navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+                    navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
                 }else{
                     toast(task.getErrorMsg(),0)
                 }
@@ -127,7 +126,7 @@ export function SettingsList(){
         setLoad(false)
         setError(true)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -283,7 +282,7 @@ export function SettingsList(){
                     fontSize:20
                 }} />
                 <Mgin right={10}/>
-                <mye.HTv text="Cooperative Information" size={16} color={mye.mycol.secondarycol} />
+                <mye.HTv text="Company Information" size={16} color={mye.mycol.secondarycol} />
             </div>
             <Mgin top={20} />
             <div className="flexi">
@@ -291,9 +290,9 @@ export function SettingsList(){
                     width:gimmeWidth(),
                     margin:dimen.dsk?20:5
                 }}>
-                    <mye.Tv text="Cooperative Name" />
+                    <mye.Tv text="Company Name" />
                     <Mgin top={5}/>
-                    <EditTextFilled hint="Cooperative Name" min={6} value={name} recv={(v)=>{
+                    <EditTextFilled hint="Company Name" min={6} value={name} recv={(v)=>{
                         setName(v)
                     }} />
                 </div>
@@ -311,7 +310,7 @@ export function SettingsList(){
                     width:gimmeWidth(),
                     margin:dimen.dsk?20:5
                 }}>
-                    <mye.Tv text="Cooperative Logo" />
+                    <mye.Tv text="Company Logo" />
                     <Mgin top={5}/>
                     <div style={{
                         width:'100%',
@@ -344,9 +343,9 @@ export function SettingsList(){
                     width:gimmeWidth(),
                     margin:dimen.dsk?20:5
                 }}>
-                    <mye.Tv text="Cooperative Address" />
+                    <mye.Tv text="Company Address" />
                     <Mgin top={5}/>
-                    <EditTextFilled hint="Cooperative Address" min={6} value={addr} recv={(v)=>{
+                    <EditTextFilled hint="Company Address" min={6} value={addr} recv={(v)=>{
                         setAddr(v)
                     }} />
                 </div>
@@ -445,7 +444,7 @@ export function SettingsList(){
                     fontSize:20
                 }} />
                 <Mgin right={10}/>
-                <mye.HTv text="Cooperative Account Details" size={16} color={mye.mycol.secondarycol} />
+                <mye.HTv text="Company Account Details" size={16} color={mye.mycol.secondarycol} />
             </div>
             <Mgin top={20} />
             <div className="flexi">
@@ -543,7 +542,7 @@ export function SettingsList(){
             <Mgin top={20} />
             <Btn txt="SAVE" width={120} onClick={()=>{
                 if(name.length<3){
-                    toast('Please add cooperative name',0)
+                    toast('Please add Company name',0)
                     return;
                 }
                 if(regNo.length<3){
@@ -551,7 +550,7 @@ export function SettingsList(){
                     return;
                 }
                 if(addr.length<3){
-                    toast('Please add cooperative address',0)
+                    toast('Please add Company address',0)
                     return;
                 }
                 if(!country){
@@ -617,7 +616,7 @@ export function SettingsList(){
                         getSchoolsiloInfo()
                     }else{
                         if(task.isLoggedOut()){
-                            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+                            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
                         }else{
                             toast(task.getErrorMsg(),0)
                         }
@@ -661,17 +660,12 @@ export function SettingsList(){
                             toast('Please enter valid email',0)
                             return;
                         }
-                        if(!isDigit(sid) || sid.length==0){
-                            toast('Please enter valid id',0)
-                            return;
-                        }
                         if(role==''){
                             toast('Please choose role',0)
                             return;
                         }
                         setLoad(true)
                         makeRequest.post('setAdmin',{
-                            user_id:sid,
                             lname:lname,
                             oname:oname,
                             eml:eml,
@@ -736,19 +730,9 @@ export function SettingsList(){
                         width:gimmeWidth(),
                         margin:dimen.dsk?20:5
                     }}>
-                        <mye.Tv text="User ID" />
-                        <Mgin top={5}/>
-                        <EditTextFilled hint="00000000" min={1} digi value={sid} recv={(v)=>{
-                            setSid(v)
-                        }} />
-                    </div>
-                    <div style={{
-                        width:gimmeWidth(),
-                        margin:dimen.dsk?20:5
-                    }}>
                         <mye.Tv text="Role" />
                         <Mgin top={2}/>
-                        <mye.Tv text="NOTE: All admins can see the dashboard" size={12}/>
+                        <mye.Tv text="NOTE: Superadmins have all access" size={12}/>
                         <Mgin top={2}/>
                         <select id="dropdown" name="dropdown" value={role} onChange={(e)=>{
                             setRole(e.target.value)
@@ -829,13 +813,11 @@ export function SettingsList(){
             setLname(usr.getLastName())
             setOname(usr.getOtherNames())
             setEml(usr.getEmail())
-            setSid(usr.getUserId())
             setRole(usr.getRole())
         }else{
             setLname('')
             setOname('')
             setEml('')
-            setSid('')
             setRole('')
         }
     }
@@ -874,7 +856,7 @@ export function SettingsList(){
                     setOptToShow(-1)
                 }} />
                 <MyCell text="Edit" ocl={()=>{
-                     if(prop.user.getUserId()==masterID){
+                     if(prop.user.getEmail()==masterEmail){
                         toast('Cannot edit master Admin',0)
                         return;
                     }
@@ -884,12 +866,14 @@ export function SettingsList(){
                 }} alignStart special/>
                 <Line />
                 <MyCell text="Delete" ocl={()=>{
-                    if(prop.user.getUserId()==masterID){
+                    if(prop.user.getEmail()==masterEmail){
                         toast('Cannot delete master Admin',0)
                         return;
                     }
                     setLoad(true)
-                    makeRequest.get(`removeAdmin/${prop.user.getUserId()}`,{},(task)=>{
+                    makeRequest.get(`removeAdmin`,{
+                        eml: prop.user.getEmail()
+                    },(task)=>{
                         setLoad(false)
                         if(task.isSuccessful()){
                             toast('Access deleted',1)
@@ -917,7 +901,7 @@ export function SettingsList(){
                 prop.ocl()
             }
         }}>
-            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} />}
+            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} hideOverflow />}
         </div>
     }
 

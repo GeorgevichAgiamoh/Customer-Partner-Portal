@@ -424,9 +424,13 @@ export function RegisterSchool(){
     const[pwd1,setPwd1] = useState('')
     const[pwd2,setPwd2] = useState('')
     const[pcode,setPcode] = useState(useParams().pcode ?? '')
+    const[disablePCode, setDisablePCode] = useState(false)
     const[nar,setNar] = useState(false)
 
     useEffect(()=>{
+        if(pcode){
+            setDisablePCode(true)
+        }
         setTitle(`Create Account - ${appName}`)
     },[])
 
@@ -549,7 +553,7 @@ export function RegisterSchool(){
             }}>
                 <mye.Tv text="Partner Code" />
                 <Mgin top={5} />
-                <EditTextFilled hint="Referral Partner Code" value={pcode} min={1} digi recv={(v)=>{
+                <EditTextFilled hint="Referral Partner Code" disabled={disablePCode} value={pcode} min={0} digi recv={(v)=>{
                     setPcode(v.trim())
                 }} />
             </div>
@@ -623,7 +627,7 @@ export function RegisterSchool(){
 
 
 
-export function PaySchoolRegFee(){
+export function PaySchoolRegFee(mainprop:{sbi?:schoolBasicinfo}){
     const navigate = useNavigate()
     const location = useLocation()
     const mye = new myEles(false);
@@ -638,6 +642,9 @@ export function PaySchoolRegFee(){
         document.body.appendChild(script);
         setTitle(`Make Payment - ${appName}`)
         begin()
+        if(mainprop.sbi){
+            setPayStage(mainprop.sbi!.isPaid()?1:0)
+        }
         return () => {
             document.body.removeChild(script);
           };
@@ -736,8 +743,8 @@ export function PaySchoolRegFee(){
     }
 
     return <div className="ctr" style={{
-        width:dimen.width,
-        height:dimen.height
+        width:'100%',
+        height:mainprop.sbi?'100%':'100vh'
     }}>
         <ErrorCont isNgt={false} visible={error} retry={()=>{
             setError(false)

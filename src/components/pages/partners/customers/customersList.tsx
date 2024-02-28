@@ -32,7 +32,7 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
         setLoad(false)
         setError(!noHarm)
         if(task.isLoggedOut()){
-            navigate(`/adminlogin?rdr=${location.pathname.substring(1)}`)
+            navigate(`/adminLogin?rdr=${location.pathname.substring(1)}`)
         }else{
             toast(task.getErrorMsg(),0)
         }
@@ -419,7 +419,7 @@ export function PartnerCustomersList(mainprop:{actiony:(action:number,user?:scho
                 prop.ocl()
             }
         }}>
-            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} />}
+            {prop.isBold?<mye.BTv text={prop.text} size={14} color={mye.mycol.primarycol}  />:<mye.Tv text={prop.text} size={14} color={mye.mycol.imghint} hideOverflow />}
         </div>
     }
 
