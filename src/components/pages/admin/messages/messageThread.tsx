@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { Btn, EditTextFilled, ErrorCont, Line, LrText, Mgin, appName, goUrl, myEles, setTitle } from "../../../../helper/general"
+import { Btn, EditTextFilled, ErrorCont, Line, LrText, Mgin, appName, goUrl, masterID, myEles, setTitle } from "../../../../helper/general"
 import useWindowDimensions from "../../../../helper/dimension"
 import { ArrowBack, AttachFileOutlined, FileOpenOutlined, MessageOutlined, PersonOutline } from "@mui/icons-material"
 import { adminUserEle, defVal, fileEle, getCreatedTime, msgEle, msgThread } from "../../../classes/models"
 import { CircularProgress, dividerClasses } from "@mui/material"
 import Toast from "../../../toast/toast"
-import { endpoint, getUserId, makeRequest, resHandler } from "../../../../helper/requesthandler"
+import { endpoint, makeRequest, resHandler } from "../../../../helper/requesthandler"
 import { useLocation, useNavigate } from "react-router-dom"
 import { PoweredBySSS } from "../../../../helper/schoolsilo"
 
@@ -132,7 +132,8 @@ export function AdminMessageThread(mainprop:{thread:msgThread,me:adminUserEle,ba
         <Mgin top={20} />
         <div style={{
             width:'100%',
-            flex:1
+            flex:1,
+            overflow:'scroll'
         }}>
             {
                 msgs.length==0?<div style={{
@@ -217,7 +218,7 @@ export function AdminMessageThread(mainprop:{thread:msgThread,me:adminUserEle,ba
                 sendMsg()
             }} strip={send.length < 3} />
         </div>
-        <PoweredBySSS floaatIt />
+        <PoweredBySSS floaatIt/>
     </div>
 
     function sendMsg() {
@@ -230,9 +231,9 @@ export function AdminMessageThread(mainprop:{thread:msgThread,me:adminUserEle,ba
         function finise(fid:string){
             makeRequest.post('sendMsg',{
                 body: sc,
-                who: getUserId(),
+                who: masterID,
                 tid: mainprop.thread.getThreadId(),
-                mail: mainprop.thread.amFrom()?mainprop.thread.getToMail():mainprop.thread.getFromMail(),
+                mail: mainprop.thread.amFrom(true)?mainprop.thread.getToMail():mainprop.thread.getFromMail(),
                 art:fid
             },(task)=>{
                 setLoad(false)
@@ -254,7 +255,7 @@ export function AdminMessageThread(mainprop:{thread:msgThread,me:adminUserEle,ba
             if (art.type.startsWith('image/')) {
                 fileId = 'img_'+fileId;
             }
-            makeRequest.uploadFile('msg',fileId,getUserId(),art!, (task)=>{
+            makeRequest.uploadFile('msg',fileId,masterID,art!, (task)=>{
                 if(task.isSuccessful()){
                     finise(fileId)
                 }else{
@@ -279,7 +280,7 @@ export function AdminMessageThread(mainprop:{thread:msgThread,me:adminUserEle,ba
             boxSizing:'border-box',
             padding:dimen.dsk?20:10,
             alignItems:'flex-start',
-            alignSelf: prop.ele.isMe()?'flex-end':'flex-start',
+            alignSelf: prop.ele.isMe(true)?'flex-end':'flex-start',
             minWidth:dimen.dsk?400:200
         }}>
             <LrText

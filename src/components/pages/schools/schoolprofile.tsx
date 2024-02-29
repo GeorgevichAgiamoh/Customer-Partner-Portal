@@ -178,6 +178,10 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
     }
 
     function genOk(){
+        if(!logo && !fileExists){
+            toast('Please upload school logo',0)
+            return
+        }
         if(!state){
             toast('Invalid State location Input',0)
             return
@@ -300,7 +304,7 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                 }} />
             </div>
             <Mgin top={15} />
-            <div style={{
+            <div ref={genRef} style={{
                 width:'100%'
             }}>
                 <mye.Tv text="Partner Code" />
@@ -344,9 +348,9 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                     ref={fileInputRef}
                     style={{ display: 'none' }}
                 />
-               <IconBtn icon={Add} mye={mye} ocl={()=>{
+               <IconBtn width={130} icon={Add} mye={mye} ocl={()=>{
                     fileInputRef.current?.click()
-                }} text="ATTACH DOC" />
+                }} text="UPLOAD LOGO" />
             </div>}
             />
             <Mgin top={10} />
@@ -560,7 +564,7 @@ export function SchoolProfile(mainprop:{goto:(action:number)=>void}){
                                 },(task)=>{
                                     setLoad(false)
                                     if(task.isSuccessful()){
-                                        mainprop.goto(0)
+                                        window.location.reload() //Assuming it'll go to dashboard tab
                                     }else{
                                         if(task.isLoggedOut()){
                                             navigate('/schoolLogin')

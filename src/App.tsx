@@ -50,7 +50,6 @@ export default function App() {
             <Route path='/'  element={<MainPage />}></Route>
             <Route path='/schoolRegister/:pcode?'  element={<RegisterSchool />}></Route>
             <Route path='/partnerRegister'  element={<RegisterPartner />}></Route>
-            <Route path='/adminRegister'  element={<RegisterAdmin />}></Route>
             <Route path='/schoolLogin'  element={<MailLogin acctType={0} />}></Route>
             <Route path='/partnerLogin'  element={<MailLogin acctType={1} />}></Route>
             <Route path='/adminLogin'  element={<MailLogin acctType={2} />}></Route>

@@ -132,7 +132,8 @@ export function SchoolMessageThread(mainprop:{thread:msgThread,sbi:schoolBasicin
         <Mgin top={20} />
         <div style={{
             width:'100%',
-            flex:1
+            flex:1,
+            overflow: "scroll"
         }}>
             {
                 msgs.length==0?<div style={{

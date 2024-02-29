@@ -1,12 +1,12 @@
 import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, SavingsOutlined, MessageOutlined, AddOutlined, ArrowRight } from "@mui/icons-material"
 import { useState, useEffect } from "react"
 import useWindowDimensions from "../../../../helper/dimension"
-import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba, EditTextFilled } from "../../../../helper/general"
+import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba, EditTextFilled, masterID } from "../../../../helper/general"
 import Barcode from "react-barcode"
 import { adminUserEle, msgStat, msgThread, partnerBasicinfo, schoolBasicinfo, } from "../../../classes/models"
 import { CircularProgress } from "@mui/material"
 import Toast from "../../../toast/toast"
-import { getUserId, makeRequest, resHandler } from "../../../../helper/requesthandler"
+import {  makeRequest, resHandler } from "../../../../helper/requesthandler"
 import { useLocation, useNavigate } from "react-router-dom"
 import { PoweredBySSS } from "../../../../helper/schoolsilo"
 import tabcard from "../../../../assets/tabcard.png"
@@ -47,7 +47,7 @@ export function AdminMessagesList(mainprop:{me:adminUserEle,actiony:(thread:msgT
     function getStats(dontGetMsgs?:boolean){
         setLoad(true)
         setError(false)
-        makeRequest.get(`getMyMessagesStat/${getUserId()}`,{},(task)=>{
+        makeRequest.get(`getMyMessagesStat/${masterID}`,{},(task)=>{
             if(task.isSuccessful()){
                 setStat(new msgStat(task.getData()))
                 if(dontGetMsgs){
@@ -65,7 +65,7 @@ export function AdminMessagesList(mainprop:{me:adminUserEle,actiony:(thread:msgT
         setShowSearch(false)
         setError(false)
         setLoad(true)
-        makeRequest.get(`getMyMessages/${getUserId()}`,{
+        makeRequest.get(`getMyMessages/${masterID}`,{
             start:(index*20),
             count:20
         },(task)=>{
@@ -267,7 +267,7 @@ export function AdminMessagesList(mainprop:{me:adminUserEle,actiony:(thread:msgT
                             return <div id="clk" className="hlc" key={myKey+index+showingIndex*20} onClick={()=>{
                                 mainprop.actiony(ele,1)
                             }}>
-                                <MyCell text={ele.amFrom()?ele.getToName():ele.getFromName()} />
+                                <MyCell text={ele.amFrom(true)?ele.getToName():ele.getFromName()} />
                                 <MyCell text={ele.getLastMsg()} special/>
                                 <MyCell text={ele.getLastUpdated()} />
                                 <Opts index={index} thread={ele} />
@@ -330,7 +330,7 @@ export function AdminMessagesList(mainprop:{me:adminUserEle,actiony:(thread:msgT
                 setLoad(true)
                 makeRequest.post('createMsgThread',{
                     from: mainprop.me.getLastName(),
-                    from_uid: getUserId(),
+                    from_uid: masterID,
                     to: name,
                     to_uid: id,
                     last_msg:'New Message',

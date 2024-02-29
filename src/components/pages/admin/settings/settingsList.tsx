@@ -1,4 +1,4 @@
-import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, UploadOutlined, AccountBalance, PeopleOutline } from "@mui/icons-material"
+import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, UploadOutlined, AccountBalance, PeopleOutline, InfoOutlined } from "@mui/icons-material"
 import { useState, useEffect, useRef } from "react"
 import useWindowDimensions from "../../../../helper/dimension"
 import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, EditTextFilled, MyCB, ErrorCont, isEmlValid, masterID, isDigit, masterEmail } from "../../../../helper/general"
@@ -687,6 +687,21 @@ export function SettingsList(){
                     }} />}
                 />
                 <Mgin top={20} />
+                <div className="hlc" style={{
+                    width:'100%'
+                }}>
+                    <Mgin right={10} />
+                    <InfoOutlined className="icon" style={{
+                        fontSize:15
+                    }}/>
+                    <Mgin right={5}/>
+                    <div style={{
+                        flex:1
+                    }}>
+                        <mye.Tv text="A login will be created with this email if it doesnt exist. Default password is 123456" />
+                    </div>
+                </div>
+                <Mgin top={10} />
                 <div className="flexi">
                     <div style={{
                         width:gimmeWidth(true),

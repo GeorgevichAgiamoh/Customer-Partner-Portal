@@ -1,6 +1,6 @@
 import { format } from "date-fns"
 import { mCountry, mLga, mState } from "monagree-locs"
-import {  myEles, spin_genders, spin_marital, spin_nok } from "../../helper/general"
+import {  masterID, myEles, spin_genders, spin_marital, spin_nok } from "../../helper/general"
 import { mBanks } from "monagree-banks"
 import { endpoint, getUserId } from "../../helper/requesthandler"
 
@@ -245,7 +245,7 @@ export class schoolPropInfo{
         return !this.data?defVal:this.data['fname']
     }
     getLastName(){
-        return !this.data?defVal:this.data['lame']
+        return !this.data?defVal:this.data['lname']
     }
     getMiddleName(){
         return !this.data?defVal:this.data['mname']
@@ -430,8 +430,8 @@ export class msgThread{
     }
 
     //--CUSTOM
-    amFrom(){
-        return this.data['from_uid'] == getUserId()
+    amFrom(isAdmin?:boolean){
+        return this.data['from_uid'] == (isAdmin?masterID:getUserId())
     }
     getLastUpdated(){
         return getUpdatedTime(this.data)
@@ -474,8 +474,8 @@ export class msgEle{
     hasArt(){
         return this.data['art'] != '_'
     }
-    isMe(){
-        return this.data['who'] == getUserId()
+    isMe(isAdmin?:boolean){
+        return this.data['who'] == (isAdmin?masterID:getUserId())
     }
     getTime(){
         return getCreatedTime(this.data)

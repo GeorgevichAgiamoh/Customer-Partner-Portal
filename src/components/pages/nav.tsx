@@ -33,9 +33,11 @@ export function SchoolNav(mainprop:{currentTab:number,mye:myEles,isMobile:boolea
                     }}/>
                 </div>
             </div>
-            <Mgin top={20} />
-            <img src={logo} alt="SCHOOLSILO Logo" />
-            <Mgin top={20} />
+            <Mgin top={50} />
+            <img src={logo} alt="SCHOOLSILO Logo" style={{
+                width:'75%'
+            }}/>
+            <Mgin top={50} />
             <Tab icon={DashboardOutlined} text="Dashboard" pos={0} />
             <Tab icon={PaymentOutlined} text="Payments" pos={1} />
             <Tab icon={MessageOutlined} text="Messages" pos={2} />
@@ -109,9 +111,11 @@ export function PartnerNav(mainprop:{currentTab:number,mye:myEles,isMobile:boole
                     }}/>
                 </div>
             </div>
-            <Mgin top={20} />
-            <img src={logo} alt="SCHOOLSILO Logo" />
-            <Mgin top={20} />
+            <Mgin top={50} />
+            <img src={logo} alt="SCHOOLSILO Logo" style={{
+                width:'75%'
+            }} />
+            <Mgin top={50} />
             <Tab icon={DashboardOutlined} text="Dashboard" pos={0} />
             <Tab icon={ContactsOutlined} text="Customers" pos={1} />
             <Tab icon={PaymentOutlined} text="Payments" pos={2} />
@@ -188,9 +192,11 @@ export function AdminNav(mainprop:{currentTab:number,mye:myEles,isMobile:boolean
                     }}/>
                 </div>
             </div>
-            <Mgin top={20} />
-            <img src={logo} alt="SCHOOLSILO Logo" />
-            <Mgin top={20} />
+            <Mgin top={50} />
+            <img src={logo} alt="SCHOOLSILO Logo" style={{
+                width:'75%'
+            }}/>
+            <Mgin top={50} />
             <Tab icon={DashboardOutlined} text="Dashboard" pos={0} />
             <Tab icon={ContactsOutlined} text="Directory" pos={1} />
             <Tab icon={PaymentOutlined} text="Payments" pos={2} />

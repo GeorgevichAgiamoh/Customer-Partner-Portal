@@ -1,7 +1,7 @@
 import { PersonOutline, FilterOutlined, SortOutlined, SearchOutlined, ListAltOutlined, CloudDownloadOutlined, ArrowBack, ArrowForward, MoreVert, Close, Add, KeyboardArrowDown, SavingsOutlined, MessageOutlined, AddOutlined, ArrowRight } from "@mui/icons-material"
 import { useState, useEffect } from "react"
 import useWindowDimensions from "../../../../helper/dimension"
-import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba, EditTextFilled } from "../../../../helper/general"
+import { myEles, setTitle, appName, Mgin, Btn, LrText, IconBtn, Line, icony, ErrorCont, hexToRgba, EditTextFilled, masterID, masterEmail } from "../../../../helper/general"
 import Barcode from "react-barcode"
 import { msgStat, msgThread, partnerBasicinfo, schoolBasicinfo, } from "../../../classes/models"
 import { CircularProgress } from "@mui/material"
@@ -326,17 +326,17 @@ export function SchoolMessagesList(mainprop:{sbi:schoolBasicinfo,actiony:(thread
         }}>
             <PickMsgReceiver closy={()=>{
                 setShowPicker(false)
-            }} rdy={(name,id,email, subject)=>{
+            }} rdy={(subject)=>{
                 setLoad(true)
                 makeRequest.post('createMsgThread',{
                     from: mainprop.sbi.getSchoolName(),
                     from_uid: mainprop.sbi.getSchoolID(),
-                    to: name,
-                    to_uid: id,
+                    to: 'Admin',
+                    to_uid: masterID,
                     last_msg:'New Message',
                     subject: subject,
                     from_mail: mainprop.sbi.getEmail(),
-                    to_mail:email
+                    to_mail:masterEmail
                 },(task)=>{
                     setLoad(false)
                     if(task.isSuccessful()){
@@ -500,14 +500,10 @@ export function SchoolMessagesList(mainprop:{sbi:schoolBasicinfo,actiony:(thread
 
 }
 
-function PickMsgReceiver(prop:{closy:()=>void, rdy:(name:string,id:string,email:string,subject:string)=>void} ) {
+function PickMsgReceiver(prop:{closy:()=>void, rdy:(subject:string)=>void} ) {
     const mye = new myEles(false)
     const myKey = Date.now()
-    const[search, setSearch] = useState('')
     const[subject, setSubject] = useState('')
-    const[isSchool,setIsSchool] = useState(true)
-    const[schools,setSchools] = useState<schoolBasicinfo[]>([])
-    const[partners,setPartners] = useState<partnerBasicinfo[]>([])
 
 
 
@@ -541,7 +537,6 @@ function PickMsgReceiver(prop:{closy:()=>void, rdy:(name:string,id:string,email:
 
     return <div style={{
         width:'100%',
-        height:'100%',
         backgroundColor:mye.mycol.bkg,
         borderRadius:10,
         padding:20,
@@ -579,121 +574,19 @@ function PickMsgReceiver(prop:{closy:()=>void, rdy:(name:string,id:string,email:
                 <Close className="icon" />
             </div>
         </div>
-        <mye.Tv text="Who To Message" size={14} />
-        <Mgin top={10} />
-        <div className="hlc">
-            <Btn txt="School" width={120} onClick={()=>{
-                setIsSchool(true)
-            }} strip={!isSchool}/>
-            <Mgin right={10} />
-            <Btn txt="Partner" width={120} onClick={()=>{
-                setIsSchool(false)
-            }} strip={isSchool}/>
-        </div>
-        <Mgin top={10} />
+        <Mgin top={20} />
         <mye.Tv text="Message Subject" size={14} />
         <Mgin top={10} />
         <EditTextFilled hint="Message Subject" value={subject} min={3} recv={(v)=>{
             setSubject(v)
         }} />
         <Mgin top={10} />
-        <mye.Tv text="Search" size={14} />
-        <Mgin top={10} />
-        <div className="hlc" style={{
-            width:'100%'
-        }}>
-           <div style={{
-             flex:1
-           }}>
-             <EditTextFilled hint={`Search ${isSchool?'School':'Partner'} by name`} value={search} min={5} recv={(v)=>{
-                    setSearch(v)
-                }} />
-           </div>
-            <Mgin right={10}/>
-            <Btn txt="Search" width={100} onClick={()=>{
-                if(subject.length < 3){
-                    toast('Please add message subject first',0)
-                    return
-                }
-                const sc = search.trim()
-                if(sc.length < 5){
-                    toast('Enter at least 5 characters',0)
-                    return;
-                }
-                setLoad(true)
-                makeRequest.get(isSchool?'searchSchools':'searchPartners',{
-                    search:search
-                },(task)=>{
-                    setLoad(false)
-                    if(task.isSuccessful()){
-                        if(isSchool){
-                            const tem:schoolBasicinfo[] = []
-                            for(const key in task.getData()){
-                                tem.push(new schoolBasicinfo(task.getData()[key]['b']))
-                            }
-                            setSchools(tem)
-                        }else{
-                            const tem:partnerBasicinfo[] = []
-                            for(const key in task.getData()){
-                                tem.push(new partnerBasicinfo(task.getData()[key]['b']))
-                            }
-                            setPartners(tem)
-                        }
-                    }else{
-                        toast(task.getErrorMsg(),0)
-                    }
-                })
-            }} strip={search.length < 5} />
-        </div>
-        <Mgin top={20}/>
-        <mye.Tv text={`Choose ${isSchool?'School':'Partner'}`} size={14} />
-        <Mgin top={10}/>
-        <div style={{
-            width:'100%',
-            flex:1,
-        }}>
-            {
-                (schools.length==0 && partners.length==0)?<div style={{
-                    width:'100%',
-                    height:'100%',
-                    backgroundColor:mye.mycol.btnstrip5
-                }} className="ctr">
-                    <mye.Tv text="Search Result Will Show Here" size={12} color={mye.mycol.hint}/>
-                </div>:
-                isSchool?schools.map((ele,i)=>{
-                    return <div id="clk" key={myKey+i+0.121} onClick={()=>{
-                        prop.rdy(ele.getSchoolName(),ele.getSchoolID(),ele.getEmail(),subject)
-                    }} style={{
-                        width:'100%',
-                        marginBottom:10,
-                        backgroundColor: mye.mycol.imghintr2,
-                        borderRadius:5,
-                        boxSizing:'border-box',
-                        padding:10
-                    }}>
-                        <LrText 
-                        left={<mye.BTv text={ele.getSchoolName()} size={14} />}
-                        right={<ArrowRight className="icon" />}
-                        />
-                    </div>
-                }):partners.map((ele,i)=>{
-                    return <div id="clk" key={myKey+i+0.121} onClick={()=>{
-                        prop.rdy(ele.getFirstName(),ele.getPartnerID(),ele.getEmail(),subject)
-                    }} style={{
-                        width:'100%',
-                        marginBottom:10,
-                        backgroundColor: mye.mycol.imghintr2,
-                        borderRadius:5,
-                        boxSizing:'border-box',
-                        padding:10
-                    }}>
-                        <LrText 
-                        left={<mye.BTv text={ele.getFirstName()+' '+ele.getLastName()} size={14} />}
-                        right={<ArrowRight className="icon" />}
-                        />
-                    </div>
-                })
+        <Btn txt="SUBMIT" onClick={()=>{
+            if(subject.length <3){
+                toast('Please enter message subject',0)
+                return
             }
-        </div>
+            prop.rdy(subject)
+        }} />
     </div>
 }

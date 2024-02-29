@@ -132,7 +132,8 @@ export function PartnerMessageThread(mainprop:{thread:msgThread,pbi:partnerBasic
         <Mgin top={20} />
         <div style={{
             width:'100%',
-            flex:1
+            flex:1,
+            overflow: 'scroll'
         }}>
             {
                 msgs.length==0?<div style={{
