@@ -175,7 +175,9 @@ export function ForgotPassword(){
             <Mgin top={20} />
             <LrText left={<mye.Tv text="Don't have an account?" color={mye.mycol.primarycol} />} 
             right={<mye.Tv text="Create an account" color={mye.mycol.primarycol} onClick={()=>{
-                navigate(`/${getWhoRegister(who)}`)
+                if(who!='3'){
+                    navigate(`/${getWhoRegister(who)}`)
+                }
             }} />}/>
         </div>}
 
@@ -377,7 +379,9 @@ export function ResetPassword(){
             <Mgin top={20} />
             <LrText left={<mye.Tv text="Don't have an account?" color={mye.mycol.primarycol} />} 
             right={<mye.Tv text="Create an account" color={mye.mycol.primarycol} onClick={()=>{
-                navigate(`/${getWhoRegister(who)}`)
+                if(who!='3'){
+                    navigate(`/${getWhoRegister(who)}`)
+                }
             }} />}/>
         </div>}
 
@@ -493,12 +497,16 @@ export function MailLogin(mainprop:{acctType:number}){
             right={<mye.Tv text="reset password" color={mye.mycol.primarycol} onClick={()=>{
                 navigate(`/forgotpassword/${mainprop.acctType}`)
             }} />}/>
-            <Mgin top={10} />
-            <mye.Tv text="Don't have an account ?"  />
-            <Mgin top={10} />
-            <Btn txt="CREATE ACCOUNT" onClick={()=>{
-                navigate(`/${getWhoRegister(mainprop.acctType.toString())}?eml=${eml}`)
-            }} bkg={mye.mycol.btnstrip} tcol={mye.mycol.primarycol} />
+            <div className="vlc" style={{
+                display: mainprop.acctType!=3?undefined:'none'
+            }}>
+                <Mgin top={10} />
+                <mye.Tv text="Don't have an account ?"  />
+                <Mgin top={10} />
+                <Btn txt="CREATE ACCOUNT" onClick={()=>{
+                    navigate(`/${getWhoRegister(mainprop.acctType.toString())}?eml=${eml}`)
+                }} bkg={mye.mycol.btnstrip} tcol={mye.mycol.primarycol} />
+            </div>
             <Mgin top={50} />
             <div className="ctr" style={{
                 width:'100%'

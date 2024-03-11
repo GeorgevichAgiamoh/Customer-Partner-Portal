@@ -4,7 +4,7 @@ import {BrowserRouter as Router, Routes, Route, useLocation, useNavigate, } from
 import { createTheme, ThemeProvider } from "@mui/material";
 import { lazy, useEffect, useState } from 'react';
 import {  ForgotPassword, MailLogin, ResetPassword, Verif, } from './components/pages/login';
-import { PaySchoolRegFee, RegisterAdmin, RegisterPartner, RegisterSchool } from './components/pages/register';
+import { PaySchoolRegFee, RegisterPartner, RegisterSchool } from './components/pages/register';
 import { Partners } from './components/pages/partners/partners';
 import { Schools } from './components/pages/schools/schools';
 import { Btn, Mgin, myEles } from './helper/general';

@@ -384,7 +384,7 @@ export function PartnerProfile(mainprop:{goto:(action:number)=>void}){
             }}>
                 <mye.Tv text="*Account Name" />
                 <Mgin top={5} />
-                <EditTextFilled hint="Account Name" value={aname} noSpace min={10} recv={(v)=>{
+                <EditTextFilled hint="Account Name" value={aname} min={10} recv={(v)=>{
                     setAName(v.trim())
                 }} />
             </div>

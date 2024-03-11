@@ -241,7 +241,7 @@ export function Schools(){
                     overflowY:'scroll',
                     backgroundColor:'rgba(0,0,0,0.02)'
                 }}>
-                    {sbi?tabPos===0?<SchoolDashboard goto={(a)=>{
+                    {sbi?!sbi.isPaid()?<AskToPay />:tabPos===0?<SchoolDashboard goto={(a)=>{
                         setTabPos(a)
                         setMyKey(Date.now())
                     }}  sbi={sbi!} sgi={sgi}/>:tabPos===1?<PaySchoolRegFee sbi={sbi!}/>:
@@ -274,6 +274,32 @@ export function Schools(){
             }}  />
         </div>
     </div>
+
+    function AskToPay() {
+        return <div className="ctr" style={{
+            width:'100%',
+            height:'100%'
+        }}>
+            <div className="vlc">
+                <PersonOutline style={{
+                    fontSize:30,
+                    color:mye.mycol.primarycol
+                }} />
+                <Mgin top={20} />
+                <mye.HTv text={'Payment Required'} />
+                <Mgin top={10} />
+                <mye.Tv text={'Please proceed to pay the registration fee so we can prepare your portal'} />
+                <div style={{
+                    display:sgi?'none':undefined
+                }}>
+                    <Mgin top={10} />
+                    <Btn txt="PROCEED TO PAY" width={150} onClick={()=>{
+                        navigate('/payregfee')
+                    }} />
+                </div>
+            </div>
+        </div>
+    }
 
     function AskToVerif() {
         return <div className="ctr" style={{

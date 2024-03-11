@@ -15,7 +15,7 @@ import { defVal, schoolBasicinfo } from "../classes/models";
 
 
 
-
+/*
 export function RegisterAdmin(){
     const qry = useQuery();
     const navigate = useNavigate()
@@ -176,7 +176,7 @@ export function RegisterAdmin(){
     </div>
 
 }
-
+*/
 
 
 
@@ -279,9 +279,9 @@ export function RegisterPartner(){
                     flex:1,
                     marginLeft:20
                 }}>
-                    <mye.Tv text="*Middle Name" />
+                    <mye.Tv text="Middle Name" />
                     <Mgin top={5} />
-                    <EditTextFilled hint="Middle Name" value={mname} noSpace min={3} recv={(v)=>{
+                    <EditTextFilled hint="Middle Name" value={mname} noSpace min={0} recv={(v)=>{
                         setMName(v.trim())
                     }} />
                 </div>
@@ -351,7 +351,7 @@ export function RegisterPartner(){
                     toast('Invalid First Name Input',0)
                     return;
                 }
-                if(mname.length < 3){
+                if(mname.length > 0 && mname.length < 3){
                     toast('Invalid Middle Name Input',0)
                     return;
                 }

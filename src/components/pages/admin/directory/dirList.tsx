@@ -547,7 +547,7 @@ export function AdminDirList(mainprop:{actiony:(action:number,user:any,isSchool:
                                                 name: prop.school!.getSchoolName(),
                                                 email: prop.school!.getEmail(),
                                                 subject: "SCHOOLSILO Account Verified",
-                                                body: `Your SCHOOLSILO account has been verified. You can now use the portal at:`,
+                                                body: `Your SCHOOLSILO account has been verified. Please wait up to 72 hours for us to prepare your portal:`,
                                                 link: 'https://portal.schoolsilo.cloud/schoolLogin'
                                             },(task)=>{
                                                 setLoad(false)

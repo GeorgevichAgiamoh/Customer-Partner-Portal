@@ -78,7 +78,7 @@ export class partnerBasicinfo{
         return this.data['fname']
     }
     getMiddleName(){
-        return this.data['mname']
+        return this.data['mname'] ?? ''
     }
     getLastName(){
         return this.data['lname']
